@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "kit_version": "3.3.0",
+  "files": {
+    ".agents/eidos/README.md": "0a7e13252aec2388af2bebe5bec36e759780b9707000bdeafea9011122cba0ec",
+    ".agents/eidos/archive/README.md": "33c8946b6189f14395d3aa700bdf5b7b8dd1d71092cc37e6dd29216055cbcdb2",
+    ".agents/eidos/work/_template.md": "6767fa2caa5ad4ca8373e684f646761e262a4a520b7bcd821e94881a175137fe",
+    ".agents/tools/eidos.py": "a778b950821bd8d807a8daadfe18e2645a927287adf009aa1f8c527aa613237f",
+    ".agents/workflows/eidos-v3.md": "a031d4f801bf60d6099834194684477957bd9d8fabbfbc17cec7c49ad4922966"
+  }
+}

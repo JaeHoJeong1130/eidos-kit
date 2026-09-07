@@ -1,0 +1,29 @@
+{
+  "eidos": {
+    "files": {
+      ".agents/eidos/README.md": "979cb0fcf6cb9fff37bd621d632ea7f32e0f395829c5b4612e2b8af86bddc1fc",
+      ".agents/eidos/archive/README.md": "33c8946b6189f14395d3aa700bdf5b7b8dd1d71092cc37e6dd29216055cbcdb2",
+      ".agents/eidos/work/_template.md": "6767fa2caa5ad4ca8373e684f646761e262a4a520b7bcd821e94881a175137fe",
+      ".agents/tools/eidos.py": "998e7a26780f8427ce32d4974d277e4253038f7715cedcf6a35d47e79a4d775e",
+      ".agents/workflows/eidos-v3.md": "484776efe0dfc6806244030a8dc0ef11a1a04bdbfcaa60ae567b66ee4747b6a0"
+    },
+    "kit_version": "3.2.1"
+  },
+  "files": {
+    ".agents/failures/_template.md": "389fc627b308b4fb8e1df023ba23fe79e01b558c62e2dd8ff40abdcfba2b1698",
+    ".agents/harness/contract.md": "6188e3e21fd1ad3ef108eb1da9e0c22e6bb38124be7fc97183919ffa7cb93149",
+    ".agents/routes/_template.md": "6cd588d5818b037898eb83882b6a89608caa19016aef1938864660f3d77f5581",
+    ".agents/rubrics/artifact-or-model.md": "171ad74ae20322b15729f566d4e56c6f3585dcc4c2853615daa2704910e3130a",
+    ".agents/rubrics/common-change.md": "7c1bb4ee4b2a4d3bf9236abbb73d49c6df7bff48acb913efe417f6468bd12134",
+    ".agents/rubrics/public-contract.md": "99ff04fa21fad96eb6ddb868cf4a27ce7564358b77b2cda9f110cb8e8a802e3c",
+    ".agents/rubrics/release-or-external.md": "4aa170281a59df542827dbebab6f83ad3f0addbb6d623ef020b6fdaf1b1e3c91",
+    ".agents/skills/project-harness/SKILL.md": "f2ad2bc3ef0a90a29c309ae84946198923965a7540e2b6036b7f56a39f821160",
+    ".agents/tools/harness.py": "d7c245434898ae0ddb3f38155e8994280609873ffbb11e2f9aa36fb5953794f4",
+    ".agents/workflows/change.md": "787c267cd78619e712370e57ce5b8588b051df9488240dddfa9f61678a234fa6",
+    ".agents/workflows/verification.md": "5684729d852e4b6a7a27abca24235210a17fa1c94733ecbf5a4154b6d7b22daa",
+    ".claude/skills/project-harness/SKILL.md": "e32b73c9d7e07435cf62cd909f068ec8ef84b9b0d353879a7fabb5866a175c18",
+    "CLAUDE.md": "def9622c338b45ae9fe6257f45390e24335563493a7bf69771a60f475598e169"
+  },
+  "kit_version": "1.4.1",
+  "schema_version": 1
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "purpose": "Compare the same model on fixed isolated task repositories with minimal instructions and with Eidos/Harness. No model execution is performed by the local measurement script.",
+  "controls": ["same model and reasoning setting", "same starting commit and task prompt", "same tools and permissions", "fresh worktree per run", "record repetitions and cache conditions"],
+  "metrics": ["task_completion", "acceptance_checks", "out_of_scope_changes", "rework_count", "elapsed_seconds", "input_tokens", "cached_input_tokens", "output_tokens", "tool_output_bytes"],
+  "missing_metric": "Record unavailable usage as null, never infer tokens from bytes. Preserve only aggregate usage and task evidence, not raw conversation transcripts.",
+  "bootstrap_baseline": {
+    "bytes": 9820,
+    "observed_on": "2026-09-07",
+    "files": ["AGENTS.md", ".agents/context.json", ".agents/routing.md", ".agents/harness/contract.md", ".agents/skills/project-harness/SKILL.md", ".agents/rubrics/common-change.md", ".agents/workflows/change.md", ".agents/eidos/direction.md"]
+  },
+  "tasks": [
+    {"id": "docs", "start": "A usage example has one incorrect option; executable behavior is correct.", "prompt": "Correct the example and verify the documentation.", "allowed": ["README.md", "new Work"], "expected": "Correct option, meaningful short Work, documented docs-only verification.", "pass": ["example matches CLI", "no runtime edits", "no full-history load required"]},
+    {"id": "parser", "start": "A parser returns an incorrect result for empty input; nonempty fixtures pass.", "prompt": "Fix empty-input parsing without changing valid-input behavior.", "allowed": ["parser module", "parser tests", "new Work"], "expected": "Deterministic empty result with preserved valid-input behavior.", "pass": ["boundary test passes", "existing fixture outputs unchanged", "input contract referenced"]},
+    {"id": "regression", "start": "A previously fixed delimiter bug lacks a regression test.", "prompt": "Add a test that catches the former delimiter bug.", "allowed": ["parser tests", "new Work"], "expected": "Test fails with the original buggy parser and passes with the fixed parser.", "pass": ["mutation to old behavior fails", "no unrelated implementation change"]},
+    {"id": "failure-prevention", "start": "A route links a Failure entry and a regression fixture for quoted delimiters.", "prompt": "Extend delimiter support while preserving quoted fields.", "allowed": ["parser module", "parser tests", "new Work"], "expected": "Relevant Failure and contract used; quoted-field regression remains green.", "pass": ["new delimiter supported", "prior failure not repeated", "irrelevant Failure bodies unnecessary"]},
+    {"id": "resume", "start": "An unfinished Work references an archived Direction and contains a verified partial result; remote activity is unknown.", "prompt": "Resume the recorded task and finish its remaining acceptance check.", "allowed": ["Work-declared paths", "same Work", "local claim"], "expected": "Preserve original Direction, intent and partial evidence; explicitly acquire or adopt the correct claim.", "pass": ["remaining acceptance check passes", "history preserved", "no inferred remote progress", "no unrelated cleanup"]}
+  ]
+}

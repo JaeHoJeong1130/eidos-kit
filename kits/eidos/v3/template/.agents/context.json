@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "project": {
+    "id": "project:example",
+    "name": "Example Project"
+  },
+  "eidos": {
+    "version": 3,
+    "direction_path": ".agents/eidos/direction.md",
+    "work_root": ".agents/eidos/work",
+    "archive_root": ".agents/eidos/archive",
+    "identity_path": ".agents/eidos/identity.json"
+  }
+}
