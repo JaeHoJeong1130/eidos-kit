@@ -1,50 +1,67 @@
 # Eidos Kit
 
-프로젝트의 개발 규칙·방향·작업 이력을 사람과 에이전트가 함께 활용하기 위한 공용 키트입니다.
-현재는 **비공개 협업 시험 배포**입니다. 공개 오픈소스 라이선스는 아직 선택하지 않았습니다.
+에이전트가 **우리 프로젝트의 규칙을 따르고, 지난 작업을 이어서 개발하도록 돕는 도구**입니다.
 
-- **Harness 1.5.0:** 작업 진입점, 규칙 연결, 위험도별 검증·리뷰, 실패 예방 지식
-- **Eidos 3.3.0:** Direction, Stage, Work, 현재 작업 조회와 로컬 claim
+**Harness Kit만 설치하면 Eidos도 함께 설치됩니다.** Eidos를 먼저 따로 설치할 필요는 없습니다.
 
-프로젝트별 일관성, 실수 재발 방지, 개발 이력, 방향 유지, Git 협업, 공용 구조의 버전 관리를 지원합니다.
-제품 코드와 도메인 규칙은 각 프로젝트가 소유합니다. 실제 모델 성능이나 토큰 절감 효과는 아직 평가하지 않았습니다.
+- **Harness:** 어떤 규칙을 읽고, 어떻게 작업하고 검증할지 안내합니다.
+- **Eidos:** 프로젝트 목표, 할 일, 작업 결과를 기록합니다.
 
-## 받아서 설치하기
+처음에는 **받기 → 설치 → 목표·담당자 설정 → 개발**의 네 단계만 따라가면 됩니다.
 
-Git과 Python 3.13을 준비합니다. Windows PowerShell 예시이며, 다른 환경에서는 `py -3.13`을 해당 Python 실행 명령으로 바꿉니다.
-키트 저장소와 적용할 프로젝트는 서로 다른 디렉터리에 둡니다.
+## 1. 키트 받기
+
+Git과 Python 3.13이 설치된 PC에서 PowerShell을 엽니다.
+GitLab 프로젝트 화면에서 **Clone 주소**를 복사해 아래 `<Clone-URL>` 자리에 넣습니다.
 
 ```powershell
-# GitLab 프로젝트 화면의 Clone URL을 사용합니다.
 git clone <Clone-URL> eidos-kit
 cd eidos-kit
+```
 
-# 새 시험 프로젝트를 먼저 만들어 적용해볼 수 있습니다.
+이제 `eidos-kit` 폴더에 설치 도구가 준비됐습니다. 실제 개발할 프로젝트는 별도 폴더에 둡니다.
+
+```text
+eidos-kit/     설치·업데이트 도구가 있는 폴더
+eidos-demo/    규칙과 작업 기록을 적용할 프로젝트 폴더
+```
+
+## 2. 시험 프로젝트에 설치하기
+
+처음이라면 새 `eidos-demo` 프로젝트로 먼저 확인해보세요.
+**지금 있는 `eidos-kit` 폴더에서** 다음 명령을 실행합니다.
+
+```powershell
 git init C:\project\eidos-demo
 py -3.13 -B kits/harness/v1/harness_kit.py install `
   --root C:\project\eidos-demo `
   --project-id project:eidos-demo --project-name "Eidos Demo"
+```
 
+`--root`는 **설치할 프로젝트 폴더**, `--project-id`는 **프로젝트의 고유 ID**, `--project-name`은 **표시할 이름**입니다.
+이 한 번의 설치로 Harness와 Eidos가 함께 들어갑니다. 설치가 끝나면 다음 명령으로 확인합니다.
+
+```powershell
 py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\eidos-demo
 ```
 
-`install`은 Git 저장소 최상위 디렉터리를 대상으로 하며, 기존 관리 대상 파일을 덮어쓰지 않습니다.
-이미 `AGENTS.md`나 `.agents/`를 사용하는 프로젝트는 먼저 상태를 확인합니다.
+오류 없이 `doctor: ok`가 나오면 설치 확인이 끝난 것입니다.
 
-```powershell
-py -3.13 -B kits/harness/v1/harness_kit.py assess --root C:\project\existing-project
-```
+**이미 개발 중인 프로젝트에 적용하려면** 아래의 [기존 프로젝트에 적용하기](#기존-프로젝트에-적용하기)를 먼저 확인하세요.
 
-기존 규칙을 보존하는 이관에는 `migrate`, 신뢰 검증이 가능한 기존 키트 설치의 갱신에는 `upgrade`를 사용합니다.
-충돌하는 파일을 삭제해서 강제로 설치하지 마세요. [설치·이관·업그레이드 조건](kits/harness/v1/README.md)을 먼저 확인합니다.
+## 3. 목표와 담당자 설정하기
 
-## 프로젝트 설정과 첫 Work
+**이제 설치한 프로젝트 폴더를 Codex에서 엽니다.** 위 예시에서는 `C:\project\eidos-demo`입니다.
+처음 한 번, 아래 내용을 우리 프로젝트에 맞게 채웁니다.
 
-설치한 프로젝트에서 다음을 설정합니다.
+- **무엇을 만드는가:** `.agents/eidos/direction.md`에 목표와 진행 단계를 적습니다.
+- **어떤 규칙을 따르는가:** `.agents/context.json`과 routing에 기존 규칙·코드·테스트 위치를 연결합니다.
+- **누가 담당하는가:** `.agents/eidos/identity.json`에 팀원을 등록합니다.
 
-1. `.agents/context.json`과 routing에 프로젝트의 규칙·코드·테스트 위치를 연결합니다.
-2. `.agents/eidos/direction.md`에 목적·범위·Stage와 완료 기준을 작성합니다.
-3. `.agents/eidos/identity.json`에 실제 작업 담당자를 등록합니다. 아래 ID와 표시 이름은 예시입니다.
+팀원 등록은 아래 예시의 ID와 이름을 실제 담당자에 맞게 바꾸면 됩니다. 이미 등록된 팀원이 있으면 기존 목록을 보존합니다.
+
+<details>
+<summary>팀원 등록 JSON 예시 보기</summary>
 
 ```json
 {
@@ -57,15 +74,37 @@ py -3.13 -B kits/harness/v1/harness_kit.py assess --root C:\project\existing-pro
 }
 ```
 
-프로젝트 루트에서 검증합니다. Git commit은 자동 생성되지 않습니다. 팀에서 설정을 확인한 뒤 일반 Git 절차로 공유하세요.
+</details>
+
+프로젝트 폴더의 PowerShell에서 설정을 검사합니다.
 
 ```powershell
 py -3.13 -B .agents/tools/eidos.py validate --root .
+```
+
+설정을 확인한 뒤 Git에 commit하여 팀과 공유합니다. **새 Git 프로젝트는 첫 Work를 시작하기 전에 초기 commit이 필요합니다.**
+설치나 설정 검사 명령이 commit까지 자동으로 만들지는 않습니다.
+
+## 4. 개발 시작하기
+
+이제 Codex에 원하는 개발 작업을 요청하면 됩니다. 예를 들면 다음과 같습니다.
+
+> AGENTS.md를 읽고, CSV 파일을 읽는 기능을 추가해줘.
+> 현재 목표와 관련 규칙을 확인하고, 작업 계획과 검증 결과를 Work에 남겨줘.
+
+**Work는 한 번의 개발 작업을 남기는 기록**입니다. 무엇을 왜 바꿨는지, 검증 결과가 무엇인지 다음 작업에서도 확인할 수 있습니다.
+현재 진행 중인 작업은 아래 명령으로 확인합니다.
+
+```powershell
 py -3.13 -B .agents/tools/eidos.py focus --root . --summary --json
 ```
 
-Work 시작에는 Git HEAD가 필요하므로 새 프로젝트는 먼저 초기 commit을 만들어야 합니다.
-설치·프로젝트 설정을 검토하여 commit한 다음, 작업 범위에 맞는 `start.json`을 만듭니다.
+일반적인 개발 요청은 에이전트와 진행하면 됩니다. 직접 명령을 사용하려는 경우에만 아래 예시를 참고하세요.
+
+<details>
+<summary>Work를 직접 시작하고 종료하는 명령 보기</summary>
+
+프로젝트 폴더에서 작업 범위에 맞는 `start.json`을 만듭니다. owner와 Stage는 프로젝트 설정에 맞춰 바꿉니다.
 
 ```json
 {
@@ -107,6 +146,24 @@ py -3.13 -B .agents/tools/eidos.py work finish --root . --input finish.json
 시작·종료 명령은 테스트나 commit을 자동 실행하지 않습니다. 초기 claim은 1시간이며 장기 작업은 갱신해야 합니다.
 정확한 입력·재시도·복구 규칙은 설치된 프로젝트의 `.agents/workflows/eidos-v3.md`를 따릅니다.
 
+</details>
+
+## 기존 프로젝트에 적용하기
+
+키트 폴더에서 대상 프로젝트의 상태를 먼저 확인합니다.
+
+```powershell
+py -3.13 -B kits/harness/v1/harness_kit.py assess --root C:\project\existing-project
+```
+
+| 프로젝트 상태 | 사용할 절차 |
+| --- | --- |
+| 처음 설치하며 기존 관리 대상 파일과 충돌이 없음 | `install` |
+| 기존 `AGENTS.md`·`.agents/` 규칙을 보존하며 합치거나, Eidos 단독 설치에 Harness를 추가함 | 조건을 확인한 뒤 `migrate` |
+| Harness/Eidos 키트가 이미 설치되어 있음 | 설치 형태에 맞는 키트의 `upgrade` |
+
+기존 파일을 삭제해서 강제로 설치하지 마세요. 이관 조건과 명령은 [상세 설치 안내](kits/harness/v1/README.md)에 있습니다.
+
 ## 직원 간 협업
 
 - 프로젝트의 규칙·Direction·Work는 해당 프로젝트의 Git 저장소에서 공유합니다.
@@ -125,6 +182,9 @@ py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\existing-pro
 관리 대상 파일을 직접 바꾼 경우 업그레이드가 거부될 수 있습니다. 프로젝트 소유 파일과 기존 기록은 보존합니다.
 
 ## 검증과 배포 범위
+
+현재 버전은 **Harness 1.5.0 / Eidos 3.3.0**입니다. 비공개 협업 시험 배포이며 공개 오픈소스 라이선스는 아직 선택하지 않았습니다.
+제품 코드와 도메인 규칙은 각 프로젝트가 소유합니다. 실제 모델 성능이나 토큰 절감 효과는 아직 평가하지 않았습니다.
 
 ```powershell
 py -3.13 -B scripts/verify.py
