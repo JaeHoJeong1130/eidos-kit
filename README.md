@@ -60,6 +60,43 @@ py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\eidos-demo
 
 팀원 등록은 아래 예시의 ID와 이름을 실제 담당자에 맞게 바꾸면 됩니다. 이미 등록된 팀원이 있으면 기존 목록을 보존합니다.
 
+### U인 팀원이 자기 ID로 시작하는 예시
+
+**참여자 목록은 프로젝트가 공유하고, 이번 작업의 담당자는 각자 선택합니다.**
+H는 `member:h`, U는 `member:u`처럼 소문자 ID를 사용합니다. 이니셜이 같다면 서로 다른 ID를 정합니다.
+`member:h`나 아래 예시의 `member:developer`는 모두가 함께 쓰는 기본값이 아닙니다.
+
+U인 팀원은 에이전트에게 다음 요청을 전달하면 됩니다. 폴더 경로는 실제 위치로 바꿉니다.
+
+```text
+나는 팀원 U이고 Eidos ID는 member:u야.
+받아 둔 키트 폴더는 <키트 폴더>, 적용할 프로젝트는 <내 프로젝트 폴더>야.
+프로젝트 상태에 맞는 공식 도구로 Harness/Eidos 키트를 적용해줘.
+내 프로젝트의 .agents/eidos/identity.json에 member:u가 활성 참여자로
+등록되어 있는지 확인하고, 없으면 U로 추가해줘.
+기존 참여자와 aliases, 과거 Work는 보존해줘.
+이번 세션의 내 새 Work는 owner member:u, Codex actor agent:codex로 작성해줘.
+```
+
+`members`에 넣을 U의 항목은 다음과 같습니다. 신규 설치의 빈 목록은 `status`를 `configured`로 바꾸고
+참여자를 넣습니다. 이미 설정된 파일은 기존 목록과 aliases를 유지한 채 필요한 항목만 추가합니다.
+
+```json
+{"id": "member:u", "display_name": "U", "status": "active"}
+```
+
+참여자 목록은 Git으로 공유합니다. 다른 팀원이 clone했다고 자기 정보만 남기도록 교체하지 않습니다.
+이미 키트가 설치된 프로젝트를 clone했다면 재설치할 필요 없이 본인 등록 상태를 확인하고 시작합니다.
+
+새 에이전트 세션에서도 **“나는 U야. 이번 작업은 member:u로 진행해줘.”**라고 알려주세요.
+직접 Work 시작 JSON을 만들 때는 `"owner": "member:u"`를 사용합니다.
+`actor`는 실행 에이전트라서 Codex를 쓰는 H와 U 모두 `agent:codex`일 수 있습니다.
+
+현재는 GitHub·GitLab 로그인이나 Git 작성자에서 Eidos ID를 자동으로 선택하지 않으며,
+PC별 기본 owner를 저장하는 전용 명령도 없습니다. ID를 모르면 에이전트가 확인해야 합니다.
+공유 `AGENTS.md`에 “항상 U로 작업”을 적으면 다른 팀원에게도 적용되므로 개인 선택은 세션에서 전달합니다.
+Git 커밋 작성자의 이름·이메일은 별도 설정이며, Eidos owner를 바꿔도 함께 바뀌지 않습니다.
+
 <details>
 <summary>팀원 등록 JSON 예시 보기</summary>
 
