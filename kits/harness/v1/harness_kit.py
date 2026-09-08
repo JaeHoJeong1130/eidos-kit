@@ -18,9 +18,9 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "1.5.0"
+KIT_VERSION = "1.6.0"
 TRUSTED_PRIOR_RELEASES = frozenset(
-    {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1"}
+    {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0"}
 )
 MANIFEST_PATH = Path(".agents/harness/kit-manifest.json")
 PROJECT_RE = re.compile(r"^project:[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -49,6 +49,7 @@ HARNESS_RELEASE_PATHS = frozenset(
     {
         "CLAUDE.md",
         ".agents/harness/contract.md",
+        ".agents/harness/repository-layout.md",
         ".agents/failures/_template.md",
         ".agents/routes/_template.md",
         ".agents/rubrics/common-change.md",
@@ -99,7 +100,12 @@ def _release_descriptor(version: str) -> dict[str, Any]:
         or value.get("kit_version") != version
         or value.get("schema_version") != 1
         or not isinstance(value.get("files"), dict)
-        or set(value["files"]) != HARNESS_RELEASE_PATHS
+        or set(value["files"])
+        != (
+            HARNESS_RELEASE_PATHS - {".agents/harness/repository-layout.md"}
+            if version in TRUSTED_PRIOR_RELEASES
+            else HARNESS_RELEASE_PATHS
+        )
         or any(
             not isinstance(digest, str) or re.fullmatch(r"[a-f0-9]{64}", digest) is None
             for digest in value["files"].values()
@@ -438,6 +444,7 @@ def _atomic_write_set(
     writes: dict[str, bytes],
     *,
     require_absent: bool = False,
+    require_absent_paths: frozenset[str] = frozenset(),
     migration_guards: dict[str, FileSnapshot] | None = None,
     stable_guards: dict[str, FileSnapshot] | None = None,
 ) -> None:
@@ -452,7 +459,7 @@ def _atomic_write_set(
     for relative, target in targets.items():
         if target.exists() and not target.is_file():
             raise HarnessKitError("target_type", f"Target is not a file: {relative}")
-        if require_absent and target.exists():
+        if (require_absent or relative in require_absent_paths) and target.exists():
             raise HarnessKitError("target_exists", f"Refusing to overwrite: {relative}")
         snapshots[relative] = FileSnapshot(
             target.is_file(),
@@ -501,7 +508,7 @@ def _atomic_write_set(
         assert_stable_guards()
         for relative, data in writes.items():
             target = targets[relative]
-            if require_absent:
+            if require_absent or relative in require_absent_paths:
                 _write_exclusive(
                     target,
                     data,
@@ -1102,8 +1109,17 @@ def _command_upgrade(args: argparse.Namespace) -> int:
     }
     writes: dict[str, bytes] = {}
     stable_guards: dict[str, FileSnapshot] = {}
+    new_kit_paths = frozenset(
+        relative
+        for relative, record in expected_manifest["files"].items()
+        if relative not in old_files and record["ownership"] == "kit"
+    )
     for relative, data in managed_writes.items():
         target = _safe_target(root, relative, f"upgrade target {relative}")
+        if relative in new_kit_paths and target.exists():
+            raise HarnessKitError(
+                "target_exists", f"Refusing to overwrite new managed path: {relative}"
+            )
         snapshot = FileSnapshot(
             target.is_file(),
             target.read_bytes() if target.is_file() else None,
@@ -1113,7 +1129,12 @@ def _command_upgrade(args: argparse.Namespace) -> int:
             stable_guards[relative] = snapshot
         else:
             writes[relative] = data
-    _atomic_write_set(root, writes, stable_guards=stable_guards)
+    _atomic_write_set(
+        root,
+        writes,
+        stable_guards=stable_guards,
+        require_absent_paths=new_kit_paths,
+    )
     print(f"Harness Kit is at {KIT_VERSION}.")
     return 0
 

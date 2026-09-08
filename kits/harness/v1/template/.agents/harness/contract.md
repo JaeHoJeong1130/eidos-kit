@@ -29,7 +29,23 @@ Harness/Eidos own declared control-plane paths only; they never create or rename
 Use `config/` for versioned configuration, profiles, scenarios, schemas and fixtures consumed by code,
 tests, packaging or deployment. Reserve `_meta/` for repository-only metadata, never runtime input.
 
-Optional `_docs/`, `_note/`, `_reference/`, `_evidence/` stay project-owned. Record deviations in a route.
+Create optional project-owned folders only when needed. Respect explicit project conventions;
+record deviations in a project route instead of moving existing files implicitly.
+
+| Path | Purpose |
+| --- | --- |
+| `_docs/` | Maintained explanations sufficient to understand the project's purpose, scope, structure, behavior, use and limits. |
+| `_note/` | Exploratory notes, planning drafts, meeting/mail summaries and reply drafts; not execution authority. |
+| `_reference/` | External source material, specifications and curated references with provenance. |
+| `_evidence/` | Verification results and evidence supporting claims and decisions. |
+| `config/` | Versioned inputs consumed by code, tests, packaging or deployment. |
+| `_meta/` | Repository-management metadata, never product runtime input. |
+| `.agents/eidos/` | With Eidos enabled, stable Direction and durable execution Work; focus is derived. |
+
+Keep transient planning and correspondence out of `_docs/`. Promote confirmed, relevant conclusions
+into maintained explanations; leave working history in its original role. Documentation never proves
+implementation by itself. See [folder guidance](repository-layout.md) for placement examples.
+
 Renaming roots used by code, tests, docs, artifacts or deployment is R2: inventory consumers, preserve
 historical evidence, provide recovery and independent review. Kit installation never does it implicitly.
 

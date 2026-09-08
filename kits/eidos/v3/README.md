@@ -6,6 +6,11 @@ worktrees share local collision information without pretending that another PC i
 
 ## Install
 
+For folder purposes and placement examples, see the companion Harness Kit's
+[project folder guidance](../../harness/v1/template/.agents/harness/repository-layout.md).
+Harness 1.6.0 installs that guide alongside the common contract. Standalone Eidos keeps its own
+Direction/Work boundary and does not install Harness guidance or create product folders.
+
 ```powershell
 py -3 kits/eidos/v3/eidos_kit.py install `
   --root C:\project\example `
