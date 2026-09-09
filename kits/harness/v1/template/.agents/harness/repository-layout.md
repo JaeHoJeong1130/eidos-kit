@@ -14,6 +14,7 @@ Install and upgrade create only declared kit control files, never the product fo
 | `_evidence/` | Results supporting a specific claim, tied to the relevant revision and check. | Validation summaries, experiment evidence and acceptance results. |
 | `config/` | Versioned configuration consumed by software or its tests and delivery tools. | Runtime profiles, schemas, test scenarios and fixtures. |
 | `_meta/` | Metadata about maintaining the repository. | Documentation edition metadata and document input maps. |
+| `.cache/` | Regenerable caches and temporary tool output. | `.cache/pytest/`, `.cache/ruff/`, `.cache/mypy/`; explicitly tracked `.gitkeep` sentinels may remain. |
 | `.agents/eidos/` | Eidos Direction and Work, when enabled. | Stable strategy in Direction; assigned execution plans, progress and outcomes in Work. |
 
 Folder names alone do not establish truth, permission or implementation status. Separate confirmed
@@ -33,6 +34,11 @@ these examples do not authorize copying raw email, personal data, credentials or
   summarize the relevant conclusion in `_docs/` rather than copying raw logs into the explanation.
 - A schema read by tests or code: use `config/`, even if humans also read it. A map used only to
   manage documentation editions belongs in `_meta/`.
+- Tool results that can be regenerated belong in `.cache/<tool>/`. Ignore their contents in Git,
+  while retaining explicit exceptions such as `.cache/pytest/.gitkeep`. Ignoring `.cache/` itself
+  prevents descendant exceptions: use traversable parent patterns and verify exclusions and
+  exceptions with Git. Promote evidence worth retaining to `_evidence/` with its revision and check.
+  Never treat the cache designation as permission to delete another task's files.
 - A research project may explicitly reserve `_development_plan/` for R&D proposal documents and
   presentation materials. Preserve that project convention; place everyday planning and mail drafts
   in `_note/`. The kit does not create `_development_plan/` or assume it is a universal requirement.

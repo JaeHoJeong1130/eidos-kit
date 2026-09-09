@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "audit": {
+    "local_repository": "local",
+    "repositories": [
+      "local"
+    ],
+    "categories": [
+      "layout",
+      "preservation"
+    ],
+    "limits": "Schema example only. Replace observations and verification with reviewed project evidence before adoption."
+  },
+  "observations": {
+    "contract": {
+      "repository": "local",
+      "path": ".agents/harness/contract.md",
+      "revision": null,
+      "observation": "unborn",
+      "sha256": "72d158e67e35c132809da08e65ca86850029d0b2e985347b949d402113d962eb"
+    }
+  },
+  "rules": [
+    {
+      "id": "REQ-FOLDERS",
+      "category": "layout",
+      "summary": "Keep folder purposes distinct and preserve project conventions.",
+      "classification": "common",
+      "common": false,
+      "domains": [
+        "documentation"
+      ],
+      "paths": [
+        "_docs",
+        "_note",
+        "_reference",
+        "_evidence",
+        "config",
+        "_meta"
+      ],
+      "sources": [
+        {
+          "observation": "contract",
+          "locator": "## Repository layout"
+        }
+      ],
+      "surfaces": [
+        {
+          "path": ".agents/harness/contract.md",
+          "contains": "## Repository layout",
+          "role": "guidance",
+          "gap": null
+        }
+      ],
+      "notes": "Example binding; add project behavior-test references and real provenance.",
+      "decision": null
+    },
+    {
+      "id": "REQ-CACHE",
+      "category": "layout",
+      "summary": "Use .cache/<tool>/ for regenerable output; ignore contents and retain explicit .gitkeep exceptions.",
+      "classification": "common",
+      "common": false,
+      "domains": [
+        "tooling"
+      ],
+      "paths": [
+        ".cache",
+        ".gitignore"
+      ],
+      "sources": [
+        {
+          "observation": "contract",
+          "locator": "Place tool caches"
+        }
+      ],
+      "surfaces": [
+        {
+          "path": ".agents/harness/contract.md",
+          "contains": "Place tool caches",
+          "role": "guidance",
+          "gap": null
+        }
+      ],
+      "notes": "Example binding; add project behavior-test references and real provenance.",
+      "decision": null
+    },
+    {
+      "id": "REQ-PRESERVE",
+      "category": "preservation",
+      "summary": "Select domain requirements independently of risk and retain explained history.",
+      "classification": "common",
+      "common": true,
+      "domains": [
+        "harness"
+      ],
+      "paths": [
+        ".agents",
+        "_meta/requirements"
+      ],
+      "sources": [
+        {
+          "observation": "contract",
+          "locator": "## Requirement preservation"
+        }
+      ],
+      "surfaces": [
+        {
+          "path": ".agents/harness/contract.md",
+          "contains": "## Requirement preservation",
+          "role": "guidance",
+          "gap": null
+        }
+      ],
+      "notes": "Example binding; add project behavior-test references and real provenance.",
+      "decision": null
+    }
+  ]
+}

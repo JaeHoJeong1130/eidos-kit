@@ -18,9 +18,9 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "1.6.0"
+KIT_VERSION = "1.7.0"
 TRUSTED_PRIOR_RELEASES = frozenset(
-    {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0"}
+    {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0", "1.6.0"}
 )
 MANIFEST_PATH = Path(".agents/harness/kit-manifest.json")
 PROJECT_RE = re.compile(r"^project:[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -45,7 +45,14 @@ MISPLACED_ROOT_CACHES = {
     ".pytest_cache": ".cache/pytest",
     ".ruff_cache": ".cache/ruff",
 }
-HARNESS_RELEASE_PATHS = frozenset(
+REQUIREMENTS_RELEASE_PATHS = frozenset(
+    {
+        ".agents/harness/requirements.md",
+        ".agents/harness/requirements.example.json",
+        ".agents/tools/requirements.py",
+    }
+)
+HARNESS_RELEASE_PATHS = REQUIREMENTS_RELEASE_PATHS | frozenset(
     {
         "CLAUDE.md",
         ".agents/harness/contract.md",
@@ -102,7 +109,13 @@ def _release_descriptor(version: str) -> dict[str, Any]:
         or not isinstance(value.get("files"), dict)
         or set(value["files"])
         != (
-            HARNESS_RELEASE_PATHS - {".agents/harness/repository-layout.md"}
+            HARNESS_RELEASE_PATHS
+            - REQUIREMENTS_RELEASE_PATHS
+            - (
+                {".agents/harness/repository-layout.md"}
+                if version != "1.6.0"
+                else set()
+            )
             if version in TRUSTED_PRIOR_RELEASES
             else HARNESS_RELEASE_PATHS
         )

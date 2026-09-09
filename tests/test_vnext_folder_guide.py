@@ -41,28 +41,70 @@ class FolderGuideTests(unittest.TestCase):
             )
         )
 
-    def prior_install(self):
+    def prior_install(self, version="1.5.0"):
         self.install()
         manifest_path = self.root / self.module.MANIFEST_PATH
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        contract = PRIOR_CONTRACT.replace("\r\n", "\n").encode("utf-8")
-        descriptor = self.module._release_descriptor("1.5.0")
-        self.assertEqual(
-            hashlib.sha256(contract).hexdigest(),
-            descriptor["files"][".agents/harness/contract.md"],
-        )
-        (self.root / ".agents/harness/contract.md").write_bytes(contract)
-        (self.root / GUIDE).unlink()
-        del manifest["files"][GUIDE]
-        manifest["kit_version"] = "1.5.0"
-        manifest["files"][".agents/harness/contract.md"]["sha256"] = hashlib.sha256(
-            contract
-        ).hexdigest()
+        descriptor = self.module._release_descriptor(version)
+        prior = json.loads(
+            (
+                REPOSITORY
+                / "kits/harness/v1/evaluation/prior-requirements-surfaces.json"
+            ).read_text(encoding="utf-8")
+        )["files"]
+        if version == "1.5.0":
+            prior[".agents/harness/contract.md"] = PRIOR_CONTRACT
+        for relative, content in prior.items():
+            if relative in descriptor["files"]:
+                data = content.replace("\r\n", "\n").encode("utf-8")
+                self.assertEqual(
+                    hashlib.sha256(data).hexdigest(), descriptor["files"][relative]
+                )
+                (self.root / relative).write_bytes(data)
+                manifest["files"][relative]["sha256"] = hashlib.sha256(data).hexdigest()
+        removed = set(self.module.REQUIREMENTS_RELEASE_PATHS)
+        if version == "1.5.0":
+            removed.add(GUIDE)
+        for relative in removed:
+            (self.root / relative).unlink()
+            del manifest["files"][relative]
+        manifest["kit_version"] = version
         manifest_path.write_bytes(self.module._json_bytes(manifest))
         for relative, digest in descriptor["files"].items():
             self.assertEqual(
                 hashlib.sha256((self.root / relative).read_bytes()).hexdigest(), digest
             )
+
+    def test_upgrade_1_6_preserves_project_registry_and_adds_read_only_tool(self):
+        self.prior_install("1.6.0")
+        registry = self.root / "_meta/requirements/registry.json"
+        registry.parent.mkdir(parents=True)
+        registry.write_bytes(b'{"project_owned": true}\n')
+        protected = {
+            p: p.read_bytes()
+            for p in (
+                registry,
+                self.root / "AGENTS.md",
+                self.root / ".agents/context.json",
+                self.root / ".agents/routing.md",
+            )
+        }
+        self.upgrade()
+        for path, data in protected.items():
+            self.assertEqual(path.read_bytes(), data)
+        for relative in self.module.REQUIREMENTS_RELEASE_PATHS:
+            self.assertTrue((self.root / relative).is_file())
+        self.assertIn(".cache/", (self.root / GUIDE).read_text())
+        self.assertIn(".gitkeep", (self.root / GUIDE).read_text())
+
+    def test_upgrade_1_6_refuses_unmanaged_requirements_tool_collision(self):
+        self.prior_install("1.6.0")
+        tool = self.root / ".agents/tools/requirements.py"
+        tool.write_bytes(b"# existing project tool\n")
+        before = self.snapshot()
+        with self.assertRaises(self.module.HarnessKitError):
+            self.upgrade()
+        self.assertEqual(self.snapshot(), before)
 
     def snapshot(self):
         return {
@@ -88,6 +130,7 @@ class FolderGuideTests(unittest.TestCase):
                 self.install(enabled)
                 self.assertTrue((self.root / GUIDE).is_file())
                 for folder in (
+                    ".cache",
                     "_docs",
                     "_note",
                     "_reference",
@@ -114,7 +157,7 @@ class FolderGuideTests(unittest.TestCase):
             json.loads((self.root / self.module.MANIFEST_PATH).read_text())[
                 "kit_version"
             ],
-            "1.6.0",
+            self.module.KIT_VERSION,
         )
         for p, content in protected.items():
             self.assertEqual(p.read_bytes(), content)

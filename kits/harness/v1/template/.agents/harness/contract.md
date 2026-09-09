@@ -40,11 +40,15 @@ record deviations in a project route instead of moving existing files implicitly
 | `_evidence/` | Verification results and evidence supporting claims and decisions. |
 | `config/` | Versioned inputs consumed by code, tests, packaging or deployment. |
 | `_meta/` | Repository-management metadata, never product runtime input. |
+| `.cache/` | Regenerable tool caches and temporary output, excluded from Git except explicitly tracked sentinels. |
 | `.agents/eidos/` | With Eidos enabled, stable Direction and durable execution Work; focus is derived. |
 
 Keep transient planning and correspondence out of `_docs/`. Promote confirmed, relevant conclusions
 into maintained explanations; leave working history in its original role. Documentation never proves
 implementation by itself. See [folder guidance](repository-layout.md) for placement examples.
+
+Place tool caches in `.cache/<tool>/`; preserve explicit tracked exceptions such as `.gitkeep`.
+Caches are not retained evidence. Never remove cache folders or tracked sentinels implicitly.
 
 Renaming roots used by code, tests, docs, artifacts or deployment is R2: inventory consumers, preserve
 historical evidence, provide recovery and independent review. Kit installation never does it implicitly.
@@ -54,6 +58,17 @@ historical evidence, provide recovery and independent review. Kit installation n
 New Work uses an active canonical human `member:*` from project-owned identity. Historical Work keeps
 its IDs, resolved through explicit aliases. Claims separate member responsibility from `agent:*`
 execution. Machine names, agents, aliases and unknown members cannot own new Work.
+
+## Requirement preservation
+
+Keep stable requirement IDs, sources, applicable paths, enforcement references and change reasons
+in a project-owned registry when adopted. Select one risk route, then independently select domain
+rules by purpose and planned paths; repeat with actual changed paths before completion. Release
+routes retain domain obligations. Read only selected references, never the full audit by default.
+Retain retired entries with reasons and replacements. With Eidos, record selected IDs, dispositions
+and verification evidence in Work; otherwise use the project's existing execution record.
+See [requirement guidance](requirements.md) for adoption and read-only `select`/`check` commands.
+An absent registry is unconfigured, not proof that no rules apply; review existing project rules.
 
 ## Failure knowledge
 

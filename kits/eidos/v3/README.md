@@ -1,5 +1,10 @@
 # Portable Eidos v3 kit
 
+When composed with Harness 1.7.0, use its requirement selection and preservation workflow.
+Work records applied requirement IDs, dispositions and verification evidence; rule bodies remain
+in the project's registry. See [Harness requirement guidance](../../harness/v1/template/.agents/harness/requirements.md).
+This companion guidance does not change Eidos's schema or kit version.
+
 Eidos v3 keeps stable project Direction separate from derived execution focus. It stores durable
 Work in the repository and short-lived agent claims under the Git common directory, so linked
 worktrees share local collision information without pretending that another PC is observable.

@@ -91,6 +91,9 @@ the Kit never performs such a rename during install or upgrade.
 
 ## Failure knowledge
 
+Harness 1.7.0 also supplies requirement preservation, described below; failure entries continue
+to record concrete observed failures rather than becoming a second requirement catalog.
+
 Use the installed tool without staging or committing automatically:
 
 ```powershell
@@ -102,6 +105,25 @@ py -3 .agents/tools/harness.py failure validate --root . --json
 Each record is exclusive-created under `.agents/failures/YYYY/`. Corrections append a record with
 `supersedes_id`; they do not overwrite history. With Eidos enabled, `source_work_id` must name an
 existing Work. Records reject secrets, personal data, raw machine paths, and malformed schemas.
+
+## Requirement preservation (1.7.0)
+
+Harness 1.7.0 adds [requirement guidance](template/.agents/harness/requirements.md), a schema example
+and standalone read-only `.agents/tools/requirements.py` (`select` / `check`, text or JSON).
+Each project chooses its audit categories, local repository identity, rules and verification
+references in its own `_meta/requirements/registry.json`. Install/upgrade never creates or overwrites
+that registry. The example is schema guidance, not an audited project baseline.
+
+Select domain rules independently of the risk route before work, then check actual changed paths
+against a reviewed Git baseline. Preserve explained amendments and retirements; missing references
+and affected known gaps fail. Unrelated gaps remain visible. Record applied IDs, dispositions and
+verification evidence in Eidos Work or the project's existing execution record. Neither the tool nor
+marker presence proves behavior: use actual behavior tests and independent review.
+
+The installed shared contract links this procedure even when an older project's bootstrap remains
+unchanged. An absent registry reports unconfigured; the workflow calls for manual rule review and
+an adoption decision. Add the quick check to the project's canonical verifier when adopting it.
+The folder guide now includes `.cache/<tool>/`, ignored contents and explicit `.gitkeep` exceptions.
 
 ## Risk and verdicts
 
