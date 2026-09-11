@@ -18,9 +18,20 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "1.7.0"
+KIT_VERSION = "1.8.1"
 TRUSTED_PRIOR_RELEASES = frozenset(
-    {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0", "1.6.0"}
+    {
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "1.4.0",
+        "1.4.1",
+        "1.5.0",
+        "1.6.0",
+        "1.7.0",
+        "1.8.0",
+    }
 )
 MANIFEST_PATH = Path(".agents/harness/kit-manifest.json")
 PROJECT_RE = re.compile(r"^project:[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -45,6 +56,40 @@ MISPLACED_ROOT_CACHES = {
     ".pytest_cache": ".cache/pytest",
     ".ruff_cache": ".cache/ruff",
 }
+LAYOUT_SCAFFOLD = {
+    "_docs/README.md": """# Project documentation
+
+Keep only the small, maintained document set a newcomer needs to understand the project's purpose,
+current structure, behavior, use, operations, and known limits. Put detailed build specifications,
+future-state designs, ADRs, research plans, and delivery roadmaps under `_blueprint/`.
+""",
+    "_blueprint/README.md": """# Project blueprints
+
+Keep detailed specifications used to design or build the project here: future-state architecture,
+implementation plans, ADRs, research designs, acceptance plans, and historical blueprint editions.
+Blueprints describe intended work and do not prove current implementation.
+""",
+    "_note/README.md": """# Working notes
+
+Keep exploratory notes, planning drafts, meeting or mail summaries, and reply drafts here. Notes are
+not execution authority; promote confirmed conclusions to `_docs/`, `_blueprint/`, or Eidos Work.
+""",
+    "_reference/README.md": """# References
+
+Keep curated external source metadata and sanitized reference summaries here with provenance. Do not
+copy restricted originals, credentials, personal data, or unapproved raw material.
+""",
+    "_evidence/README.md": """# Evidence
+
+Keep retained verification and acceptance results here, bound to the relevant source, artifact,
+environment, command, and revision. Regenerable caches do not belong here.
+""",
+    "_meta/README.md": """# Repository metadata
+
+Keep repository-maintenance metadata here. Product runtime code must not consume this directory as
+configuration or state; use `config/` for versioned runtime and test inputs.
+""",
+}
 REQUIREMENTS_RELEASE_PATHS = frozenset(
     {
         ".agents/harness/requirements.md",
@@ -54,6 +99,7 @@ REQUIREMENTS_RELEASE_PATHS = frozenset(
 )
 HARNESS_RELEASE_PATHS = REQUIREMENTS_RELEASE_PATHS | frozenset(
     {
+        ".agents/tools/layout.py",
         "CLAUDE.md",
         ".agents/harness/contract.md",
         ".agents/harness/repository-layout.md",
@@ -107,18 +153,7 @@ def _release_descriptor(version: str) -> dict[str, Any]:
         or value.get("kit_version") != version
         or value.get("schema_version") != 1
         or not isinstance(value.get("files"), dict)
-        or set(value["files"])
-        != (
-            HARNESS_RELEASE_PATHS
-            - REQUIREMENTS_RELEASE_PATHS
-            - (
-                {".agents/harness/repository-layout.md"}
-                if version != "1.6.0"
-                else set()
-            )
-            if version in TRUSTED_PRIOR_RELEASES
-            else HARNESS_RELEASE_PATHS
-        )
+        or set(value["files"]) != _release_paths(version)
         or any(
             not isinstance(digest, str) or re.fullmatch(r"[a-f0-9]{64}", digest) is None
             for digest in value["files"].values()
@@ -135,6 +170,21 @@ def _release_descriptor(version: str) -> dict[str, Any]:
     ):
         raise HarnessKitError("upgrade_path", f"Invalid release descriptor: {version}")
     return value
+
+
+def _release_paths(version: str) -> frozenset[str]:
+    paths = HARNESS_RELEASE_PATHS
+    if version not in {"1.8.0", "1.8.1"}:
+        paths = paths - {".agents/tools/layout.py"}
+    if version in {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0"}:
+        return (
+            paths
+            - REQUIREMENTS_RELEASE_PATHS
+            - {".agents/harness/repository-layout.md"}
+        )
+    if version == "1.6.0":
+        return paths - REQUIREMENTS_RELEASE_PATHS
+    return paths
 
 
 def _release_hashes(version: str) -> dict[str, str]:
@@ -727,6 +777,14 @@ def _command_install(args: argparse.Namespace) -> int:
     if (root / MANIFEST_PATH).exists():
         raise HarnessKitError("managed_target", "Harness Kit is already installed.")
     writes = _combined_render(project_id, project_name, not args.without_eidos)
+    managed_count = len(writes) - 1
+    layout_mode = getattr(args, "layout", "auto")
+    empty_project = all(item.name == ".git" for item in root.iterdir())
+    if layout_mode == "standard" or (layout_mode == "auto" and empty_project):
+        try:
+            writes.update(_layout_scaffold(root))
+        except (OSError, ValueError) as exc:
+            raise HarnessKitError("layout_invalid", str(exc)) from exc
     collisions = [relative for relative in writes if (root / relative).exists()]
     if collisions:
         raise HarnessKitError(
@@ -734,8 +792,72 @@ def _command_install(args: argparse.Namespace) -> int:
         )
     _semantic_validate(writes, not args.without_eidos)
     _atomic_write_set(root, writes, require_absent=True)
-    print(f"Installed Harness Kit {KIT_VERSION} ({len(writes) - 1} managed files).")
+    print(f"Installed Harness Kit {KIT_VERSION} ({managed_count} managed files).")
     return 0
+
+
+def _layout_module():
+    source = _template_root() / ".agents/tools/layout.py"
+    if not source.is_file() or _is_reparse(source):
+        raise HarnessKitError(
+            "layout_source", "Trusted layout inspector is unavailable."
+        )
+    module = types.ModuleType("_harness_layout")
+    exec(compile(source.read_bytes(), str(source), "exec"), module.__dict__)
+    return module
+
+
+def _layout_scaffold(root: Path) -> dict[str, bytes]:
+    """Initialize only absent project-owned support files; never adopt or overwrite content."""
+    module = _layout_module()
+    policy = module.load_policy(root) or module.default_policy()
+    candidates = {}
+    for relative, content in LAYOUT_SCAFFOLD.items():
+        role = next(
+            role
+            for role, folder in module.ROLES.items()
+            if relative.startswith(folder + "/")
+        )
+        target = policy["roles"][role] + "/README.md"
+        candidates[target] = content.encode("utf-8")
+    candidates[module.POLICY] = _json_bytes(policy)
+    cache = policy["roles"]["cache"]
+    candidates[cache + "/.gitignore"] = b"*\n!.gitignore\n!.gitkeep\n"
+    writes = {}
+    for relative, data in candidates.items():
+        target = _safe_target(root, relative, "layout scaffold")
+        if not os.path.lexists(target):
+            writes[relative] = data
+        elif not target.is_file():
+            raise HarnessKitError(
+                "layout_collision", "Layout target is not a file: " + relative
+            )
+    return writes
+
+
+def _command_layout(args: argparse.Namespace) -> int:
+    root = _check_root(args.root)
+    if args.apply and args.action != "init":
+        raise HarnessKitError("layout_action", "Only layout init accepts --apply.")
+    module = _layout_module()
+    if args.action == "init":
+        try:
+            writes = _layout_scaffold(root)
+        except (OSError, ValueError) as exc:
+            raise HarnessKitError("layout_invalid", str(exc)) from exc
+        if args.apply:
+            _atomic_write_set(root, writes, require_absent=True)
+        payload = {
+            "ok": True,
+            "applied": args.apply,
+            "creates": sorted(writes),
+            "project_owned": True,
+            "overwrites": [],
+        }
+    else:
+        payload = module.inspect(root)
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0 if payload["ok"] else 2
 
 
 def _adopted_migration_writes(
@@ -1426,6 +1548,7 @@ def _command_doctor(args: argparse.Namespace) -> int:
                         "message": f"{relative} should be generated under {expected}",
                     }
                 )
+        findings.extend(_layout_module().inspect(root)["findings"])
     except HarnessKitError as exc:
         findings.append({"severity": "error", "code": exc.code, "message": exc.message})
     payload = {
@@ -1457,6 +1580,12 @@ def build_parser() -> argparse.ArgumentParser:
     install.add_argument("--project-id", required=True)
     install.add_argument("--project-name", required=True)
     install.add_argument("--without-eidos", action="store_true")
+    install.add_argument(
+        "--layout",
+        choices=["auto", "standard", "none"],
+        default="auto",
+        help="Scaffold support folders automatically only in an empty Git root.",
+    )
     install.set_defaults(handler=_command_install)
     migrate = commands.add_parser("migrate")
     _add_root(migrate)
@@ -1478,6 +1607,13 @@ def build_parser() -> argparse.ArgumentParser:
     assess = commands.add_parser("assess")
     _add_root(assess)
     assess.set_defaults(handler=_command_assess)
+    layout = commands.add_parser("layout")
+    _add_root(layout)
+    layout.add_argument("action", choices=["init", "check", "preview"])
+    layout.add_argument(
+        "--apply", action="store_true", help="Apply init's absent-file creation plan."
+    )
+    layout.set_defaults(handler=_command_layout)
     return parser
 
 

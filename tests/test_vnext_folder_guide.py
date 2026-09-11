@@ -31,13 +31,14 @@ class FolderGuideTests(unittest.TestCase):
             ["git", "init", str(self.root)], check=True, capture_output=True
         )
 
-    def install(self, enabled=True):
+    def install(self, enabled=True, layout="none"):
         self.module._command_install(
             self.module.argparse.Namespace(
                 root=self.root,
                 project_id="project:test",
                 project_name="Test",
                 without_eidos=not enabled,
+                layout=layout,
             )
         )
 
@@ -62,7 +63,9 @@ class FolderGuideTests(unittest.TestCase):
                 )
                 (self.root / relative).write_bytes(data)
                 manifest["files"][relative]["sha256"] = hashlib.sha256(data).hexdigest()
-        removed = set(self.module.REQUIREMENTS_RELEASE_PATHS)
+        removed = set(self.module.REQUIREMENTS_RELEASE_PATHS) | {
+            ".agents/tools/layout.py"
+        }
         if version == "1.5.0":
             removed.add(GUIDE)
         for relative in removed:
@@ -119,7 +122,7 @@ class FolderGuideTests(unittest.TestCase):
     def upgrade(self):
         self.module._command_upgrade(self.module.argparse.Namespace(root=self.root))
 
-    def test_fresh_install_with_and_without_eidos_adds_only_control_files(self):
+    def test_fresh_install_with_and_without_eidos_scaffolds_support_files(self):
         for enabled in (True, False):
             with self.subTest(eidos=enabled):
                 self.root = Path(self.temporary.name) / str(enabled)
@@ -127,18 +130,19 @@ class FolderGuideTests(unittest.TestCase):
                 self.module.subprocess.run(
                     ["git", "init", str(self.root)], check=True, capture_output=True
                 )
-                self.install(enabled)
+                self.install(enabled, layout="auto")
                 self.assertTrue((self.root / GUIDE).is_file())
                 for folder in (
                     ".cache",
                     "_docs",
+                    "_blueprint",
                     "_note",
                     "_reference",
                     "_evidence",
-                    "config",
                     "_meta",
-                    "_development_plan",
                 ):
+                    self.assertTrue((self.root / folder).is_dir(), folder)
+                for folder in ("src", "web", "config", "_development_plan"):
                     self.assertFalse((self.root / folder).exists(), folder)
 
     def test_upgrade_1_5_preserves_project_conventions_and_material(self):

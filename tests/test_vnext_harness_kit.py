@@ -346,22 +346,24 @@ class HarnessKitTests(unittest.TestCase):
         )
         self.assertEqual(self.manager("doctor", "--json").returncode, 0)
 
-    def test_install_documents_but_does_not_create_product_layout_roots(self) -> None:
+    def test_install_scaffolds_support_roots_without_application_roots(self) -> None:
         self.install()
         contract = (self.root / ".agents/harness/contract.md").read_text(
             encoding="utf-8"
         )
         self.assertIn("Use `config/` for versioned configuration", contract)
         self.assertIn("Reserve `_meta/`", contract)
-        optional_roots = (
-            "config",
+        support_roots = (
             "_meta",
             "_docs",
+            "_blueprint",
             "_note",
             "_reference",
             "_evidence",
         )
-        for relative in optional_roots:
+        for relative in support_roots:
+            self.assertTrue((self.root / relative).is_dir(), relative)
+        for relative in ("config", "src", "web"):
             self.assertFalse((self.root / relative).exists(), relative)
 
     def test_without_eidos_has_no_eidos_files_and_allows_none_work(self) -> None:

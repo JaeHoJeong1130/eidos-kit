@@ -25,16 +25,18 @@ not change tracked files or the Git index.
 
 ## Repository layout
 
-Harness/Eidos own declared control-plane paths only; they never create or rename product directories.
+Harness/Eidos own declared control-plane paths. Fresh Harness installation in an empty Git root also
+initializes project-owned support folders; upgrade never moves existing project material.
 Use `config/` for versioned configuration, profiles, scenarios, schemas and fixtures consumed by code,
 tests, packaging or deployment. Reserve `_meta/` for repository-only metadata, never runtime input.
 
-Create optional project-owned folders only when needed. Respect explicit project conventions;
-record deviations in a project route instead of moving existing files implicitly.
+Use `_meta/layout.json` to declare project folder roles, the newcomer reading set, and reasoned
+exceptions. Respect explicit project conventions; review migration consumers before moving files.
 
 | Path | Purpose |
 | --- | --- |
-| `_docs/` | Maintained explanations sufficient to understand the project's purpose, scope, structure, behavior, use and limits. |
+| `_docs/` | A small maintained newcomer reading set: purpose, current structure, behavior, use and limits. |
+| `_blueprint/` | Detailed build specifications, target architecture, ADRs, research and implementation plans. |
 | `_note/` | Exploratory notes, planning drafts, meeting/mail summaries and reply drafts; not execution authority. |
 | `_reference/` | External source material, specifications and curated references with provenance. |
 | `_evidence/` | Verification results and evidence supporting claims and decisions. |
@@ -43,8 +45,8 @@ record deviations in a project route instead of moving existing files implicitly
 | `.cache/` | Regenerable tool caches and temporary output, excluded from Git except explicitly tracked sentinels. |
 | `.agents/eidos/` | With Eidos enabled, stable Direction and durable execution Work; focus is derived. |
 
-Keep transient planning and correspondence out of `_docs/`. Promote confirmed, relevant conclusions
-into maintained explanations; leave working history in its original role. Documentation never proves
+Keep detailed implementation plans and transient correspondence out of `_docs/`. Summarize confirmed
+conclusions in its newcomer reading set; link detailed design in `_blueprint/`. Documentation never proves
 implementation by itself. See [folder guidance](repository-layout.md) for placement examples.
 
 Place tool caches in `.cache/<tool>/`; preserve explicit tracked exceptions such as `.gitkeep`.

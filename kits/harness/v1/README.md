@@ -71,19 +71,27 @@ loads.
 
 ## Project repository layout
 
-Harness Kit does not install or rename product-owned root directories. The shared contract recommends
+Harness 1.8.1 creates standard project-owned support folders for a new empty Git root. It never
+automatically relocates existing material. The shared contract recommends
 `config/` for machine-consumed configuration, profiles, scenarios, schemas, and fixtures. `_meta/`
 is reserved for optional repository-management metadata that is not consumed by product runtime code.
-Optional human/support roots remain project-owned and are created only when needed.
-`_docs/` contains maintained explanations from which a newcomer can understand the project;
+`install --layout auto` is the default; `none` retains control-only installation, and `standard`
+explicitly initializes absent support files in an existing project. `_docs/` contains a small
+maintained newcomer reading set; `_blueprint/` contains detailed architecture, ADRs and build plans;
 `_note/` contains working notes, planning drafts and meeting/mail material. `_reference/` holds
 source references, while `_evidence/` holds verification evidence. With Eidos enabled, Direction
 and Work remain the authorities for strategy and execution.
 
 Harness 1.6.0 installs [folder guidance](template/.agents/harness/repository-layout.md) at
 `.agents/harness/repository-layout.md`, with examples for software and research projects.
-Existing explicit conventions take precedence. Upgrading adds the guide without creating or moving
-any product folder, and preserves project-owned bootstrap and routing files.
+Existing explicit conventions take precedence. Upgrading adds the guide and read-only layout inspector
+without moving material, and preserves project-owned bootstrap and routing files.
+
+Use `layout init --root <project>` for a creation preview, then `--apply` to initialize only absent
+entry files. Edit `_meta/layout.json` to declare roles, entrypoints and reasoned exceptions.
+`layout check`, `layout preview`, and `doctor` inspect placement; preview never moves files.
+The installed `.agents/tools/layout.py` also provides `check` and `preview` without the manager.
+The initial reading set is a template, not a claim that project documentation is complete.
 
 Existing repositories may declare a route-level deviation. Moving an established configuration root
 is an R2 migration when code, tests, artifacts, documentation, packaging, or deployment consumes it;
