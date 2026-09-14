@@ -7,7 +7,11 @@
 - **Harness:** 어떤 규칙을 읽고, 어떻게 작업하고 검증할지 안내합니다.
 - **Eidos:** 프로젝트 목표, 할 일, 작업 결과를 기록합니다.
 
-처음에는 **받기 → 설치 → 목표·담당자 설정 → 개발**의 네 단계만 따라가면 됩니다.
+처음에는 **받기 → 설치 → 프로젝트에 맞게 정리 → 실제 Work로 확인 → 개발** 순서로 진행합니다.
+
+**기존 프로젝트는 키트 적용만으로 완전히 최적화되지 않습니다.** 설치 후에도 기존 규칙과의 중복,
+실제 목표·담당자, 변경 영향별 검증 범위를 맞춰야 합니다. GitLab·GitHub 어디에서 받았든
+[설치 후 프로젝트에 맞게 정리하기](kits/harness/v1/ADOPTION.md)를 따라 운영 준비를 확인하세요.
 
 ## 프로젝트 폴더는 어떻게 나누나요?
 
@@ -76,7 +80,7 @@ py -3.13 -B .agents/tools/requirements.py check --base HEAD --json
 ## 1. 키트 받기
 
 Git과 Python 3.13이 설치된 PC에서 PowerShell을 엽니다.
-GitLab 프로젝트 화면에서 **Clone 주소**를 복사해 아래 `<Clone-URL>` 자리에 넣습니다.
+접근 권한이 있는 GitLab 또는 GitHub 키트 저장소에서 **Clone 주소**를 복사해 아래 `<Clone-URL>` 자리에 넣습니다.
 
 ```powershell
 git clone <Clone-URL> eidos-kit
@@ -110,10 +114,11 @@ py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\eidos-demo
 ```
 
 오류 없이 `doctor: ok`가 나오면 설치 확인이 끝난 것입니다.
+이는 키트 구조와 계약 검사를 통과했다는 뜻입니다. 실제 운영 준비는 아래 설정과 Work 실행으로 별도 확인합니다.
 
 **이미 개발 중인 프로젝트에 적용하려면** 아래의 [기존 프로젝트에 적용하기](#기존-프로젝트에-적용하기)를 먼저 확인하세요.
 
-## 3. 목표와 담당자 설정하기
+## 3. 프로젝트에 맞게 정리하기
 
 **이제 설치한 프로젝트 폴더를 Codex에서 엽니다.** 위 예시에서는 `C:\project\eidos-demo`입니다.
 처음 한 번, 아래 내용을 우리 프로젝트에 맞게 채웁니다.
@@ -121,6 +126,10 @@ py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\eidos-demo
 - **무엇을 만드는가:** `.agents/eidos/direction.md`에 목표와 진행 단계를 적습니다.
 - **어떤 규칙을 따르는가:** `.agents/context.json`과 routing에 기존 규칙·코드·테스트 위치를 연결합니다.
 - **누가 담당하는가:** `.agents/eidos/identity.json`에 팀원을 등록합니다.
+
+기존 규칙의 정본·실패 기록 위치·변경 영향별 검증 절차도 함께 정리합니다.
+[후속 정리 지침](kits/harness/v1/ADOPTION.md)에 보존할 항목, 검사를 줄일 때의 조건,
+실제 Work로 확인하는 방법과 에이전트에게 전달할 요청문이 있습니다. 신규 프로젝트에도 실제 설정은 필요합니다.
 
 팀원 등록은 아래 예시의 ID와 이름을 실제 담당자에 맞게 바꾸면 됩니다. 이미 등록된 팀원이 있으면 기존 목록을 보존합니다.
 
@@ -264,6 +273,11 @@ py -3.13 -B kits/harness/v1/harness_kit.py assess --root C:\project\existing-pro
 | Harness/Eidos 키트가 이미 설치되어 있음 | 설치 형태에 맞는 키트의 `upgrade` |
 
 기존 파일을 삭제해서 강제로 설치하지 마세요. 이관 조건과 명령은 [상세 설치 안내](kits/harness/v1/README.md)에 있습니다.
+
+적용이 끝나면 [설치 후 프로젝트에 맞게 정리하기](kits/harness/v1/ADOPTION.md)를 진행하세요.
+기존 규칙과 새 진입점의 연결, 실제 Direction과 담당자, 검증 범위를 맞춘 뒤 필요한 Work 하나를 완료합니다.
+업그레이드는 프로젝트 소유 설정을 보존하므로 낡거나 중복된 로컬 지침도 자동으로 최적화하지 않습니다.
+설치 결과와 운영 준비 결과, 남은 미설정·추가 정리 항목을 구분해서 기록하세요.
 
 ## 직원 간 협업
 

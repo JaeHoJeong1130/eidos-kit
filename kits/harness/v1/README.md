@@ -5,6 +5,15 @@ risk-based rubrics, append-only failure knowledge, verification workflow, and th
 adapters. Eidos v3 is composed by default and remains the only owner of Direction, Work, focus,
 and claims. Harness Kit does not copy or fork Eidos code.
 
+## After installation: adapt the project
+
+Installation and `doctor` success verify the kit structure; they do not automatically optimize an
+existing project's rules or workflow. Both GitLab and GitHub recipients should follow
+[설치 후 프로젝트에 맞게 정리하기](ADOPTION.md): preserve existing rules, reconcile entry points,
+set the actual Direction and human owner, map verification to change impact, and complete one real
+Work when Eidos is enabled. With `--without-eidos`, verify a real bounded task using the project's
+existing execution records instead. Fresh projects also need their actual goals, ownership, and verification setup.
+
 ## Fresh install
 
 Run only against a Git top-level directory that does not already contain managed target files.

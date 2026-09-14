@@ -9,6 +9,13 @@ Eidos v3 keeps stable project Direction separate from derived execution focus. I
 Work in the repository and short-lived agent claims under the Git common directory, so linked
 worktrees share local collision information without pretending that another PC is observable.
 
+## After installation: adapt the project
+
+Installing the kit does not automatically optimize an existing project's workflow. Set the actual
+Direction and confirmed human owner, preserve existing rules and history, and verify the process
+with one real Work. See [설치 후 프로젝트에 맞게 정리하기](../../harness/v1/ADOPTION.md),
+including the standalone Eidos notes. This applies to both GitLab and GitHub recipients.
+
 ## Install
 
 For folder purposes and placement examples, see the companion Harness Kit's
