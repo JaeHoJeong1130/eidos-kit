@@ -53,6 +53,16 @@ class FolderGuideTests(unittest.TestCase):
                 / "kits/harness/v1/evaluation/prior-requirements-surfaces.json"
             ).read_text(encoding="utf-8")
         )["files"]
+        # These files changed with member-qualified Work IDs. Restore the exact
+        # historical bytes rather than assuming today's reader/template are old.
+        prior.update(
+            json.loads(
+                (
+                    REPOSITORY
+                    / "kits/harness/v1/evaluation/prior-work-id-surfaces.json"
+                ).read_text(encoding="utf-8")
+            )["files"]
+        )
         if version == "1.5.0":
             prior[".agents/harness/contract.md"] = PRIOR_CONTRACT
         for relative, content in prior.items():
