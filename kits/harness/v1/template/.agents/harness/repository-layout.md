@@ -1,6 +1,6 @@
 # Project folder guidance
 
-Use this guide when creating or organizing project material. The shared contract defines the defaults;
+Use this guide when creating, moving or organizing project material. This guide defines the defaults;
 explicit project conventions take precedence through `_meta/layout.json` role mapping and exceptions.
 Fresh install in an empty Git root creates the standard support scaffold. Existing projects receive
 control files only unless `--layout standard` is requested; upgrade never relocates their material.

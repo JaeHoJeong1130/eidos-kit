@@ -34,6 +34,12 @@ different concepts. Select before implementation and check actual paths afterwar
 arguments add obligations and cannot hide actual changes. Unregistered paths warn and retain common
 obligations. Load only returned references; the full registry is not a bootstrap reading requirement.
 
+Pure read-only requests may omit `select/check` unless project-owned instructions require them.
+This is an invocation exception, not a rule exemption: privacy, authority, domain rules and physical
+read-only behavior still apply. Use selection when the question needs rule inspection or safety is
+unclear. Before a query becomes a change, apply the change route, requirements and execution workflow.
+`select --route read-only` retains its common/domain/path selection semantics.
+
 The registry has schema version 1, an `audit` with `local_repository`, `repositories`, `categories`
 and descriptive limits, `observations`, and `rules`. Local repository identity cannot be rebound in
 place to bypass reference checking. Categories cannot disappear; retain retired requirements.

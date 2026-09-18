@@ -24,7 +24,13 @@ VERSION = "3"
 PROJECT_RE = re.compile(r"^project:[a-z0-9]+(?:-[a-z0-9]+)*$")
 REVISION_RE = re.compile(r"^D\d{4}$")
 STAGE_RE = re.compile(r"^S\d{2,}$")
-WORK_RE = re.compile(r"^W-\d{8}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+LEGACY_WORK_RE = re.compile(r"^W-\d{8}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORK_RE = re.compile(
+    r"^W-\d{8}-(?:\d{2}|m-[a-z0-9][a-z0-9-]*-[a-f0-9]{12})-"
+    r"[a-z0-9]+(?:-[a-z0-9]+)*$"
+)
+MAX_WORK_FILENAME = 80
+MAX_WORK_SLUG = 24
 IDENTITY_RE = re.compile(r"^(?:unassigned|[a-z][a-z0-9-]*:[a-z0-9][a-z0-9-]*)$")
 WORKSTREAM_RE = re.compile(r"^workstream:[a-z0-9][a-z0-9-]*$")
 CLAIM_RE = re.compile(r"^claim-[a-f0-9]{16,64}$")
@@ -1255,7 +1261,7 @@ def _validate_work_document(
             findings,
             "error",
             "work_id",
-            "Work ID and filename must match W-YYYYMMDD-NN-slug.",
+            "Work ID and filename must match a legacy or member-qualified Work ID.",
             path,
             root,
         )
@@ -2207,36 +2213,6 @@ def _prepare_new_work(
     work_root = _configured_path(
         model.root, model.context, "work_root", ".agents/eidos/work"
     )
-    if args.id:
-        work_id = args.id
-    else:
-        if not args.slug:
-            raise EidosError(
-                "slug_required", "--slug is required when --id is omitted."
-            )
-        used = {path.stem for path in work_root.glob(f"W-{day}-*.md")}
-        sequence = next(
-            (
-                number
-                for number in range(1, 100)
-                if not any(item.startswith(f"W-{day}-{number:02d}-") for item in used)
-            ),
-            None,
-        )
-        if sequence is None:
-            raise EidosError(
-                "sequence_exhausted", "No Work sequence is available for today."
-            )
-        work_id = f"W-{day}-{sequence:02d}-{args.slug}"
-    if not WORK_RE.fullmatch(work_id) or work_id[2:10] != day:
-        raise EidosError(
-            "work_id", "Work ID must use today's W-YYYYMMDD-NN-slug format."
-        )
-    stages = model.stages_by_revision.get(model.direction.metadata["revision"], [])
-    if args.stage not in {stage["id"] for stage in stages}:
-        raise EidosError(
-            "work_stage", f"Stage does not exist in current Direction: {args.stage}"
-        )
     if model.identity.get("status") != "configured":
         raise EidosError(
             "identity_unconfigured", "Configure Eidos identity before creating Work."
@@ -2248,6 +2224,57 @@ def _prepare_new_work(
     if not _active_canonical_member(model.identity, args.owner):
         raise EidosError(
             "owner_id", "New Work owner must be an active canonical member:* ID."
+        )
+    if args.id:
+        work_id = args.id
+    else:
+        if not args.slug:
+            raise EidosError(
+                "slug_required", "--slug is required when --id is omitted."
+            )
+        if re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", args.slug) is None:
+            raise EidosError(
+                "work_slug", "Work slug must use lowercase ASCII kebab-case."
+            )
+        prefix = f"W-{day}-m-{args.owner.removeprefix('member:')}-"
+        budget = min(MAX_WORK_SLUG, MAX_WORK_FILENAME - len(prefix) - 12 - 1 - 3)
+        if budget < 1:
+            raise EidosError(
+                "work_id_length",
+                "Member key leaves no room in an 80-character Work filename.",
+            )
+        short_slug = args.slug[:budget].rstrip("-")
+        for _ in range(8):
+            work_id = f"{prefix}{uuid.uuid4().hex[:12]}-{short_slug}"
+            if not (work_root / f"{work_id}.md").exists():
+                break
+        else:
+            raise EidosError("work_id_collision", "Could not allocate a fresh Work ID.")
+    if not WORK_RE.fullmatch(work_id) or work_id[2:10] != day:
+        raise EidosError(
+            "work_id", "Work ID must use today's legacy or member-qualified format."
+        )
+    if not LEGACY_WORK_RE.fullmatch(work_id):
+        prefix = f"W-{day}-m-{args.owner.removeprefix('member:')}-"
+        if (
+            re.fullmatch(
+                re.escape(prefix) + r"[a-f0-9]{12}-[a-z0-9]+(?:-[a-z0-9]+)*", work_id
+            )
+            is None
+        ):
+            raise EidosError(
+                "work_id_owner",
+                "New Work ID must contain the initial owner's member key.",
+            )
+        if len(work_id + ".md") > MAX_WORK_FILENAME:
+            raise EidosError(
+                "work_id_length",
+                "New member-qualified Work filenames are limited to 80 characters.",
+            )
+    stages = model.stages_by_revision.get(model.direction.metadata["revision"], [])
+    if args.stage not in {stage["id"] for stage in stages}:
+        raise EidosError(
+            "work_stage", f"Stage does not exist in current Direction: {args.stage}"
         )
     if not WORKSTREAM_RE.fullmatch(args.workstream):
         raise EidosError("workstream_id", "Invalid workstream ID.")

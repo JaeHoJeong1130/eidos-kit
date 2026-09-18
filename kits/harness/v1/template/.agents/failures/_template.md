@@ -4,7 +4,7 @@ observed_on: YYYY-MM-DD
 area: component
 tags: component, boundary
 status: open
-source_work_id: W-YYYYMMDD-NN-short-slug
+source_work_id: W-YYYYMMDD-m-member-12hex-slug
 enforced_by: tests/path.py, .agents/routes/example.md
 supersedes_id: none
 ---

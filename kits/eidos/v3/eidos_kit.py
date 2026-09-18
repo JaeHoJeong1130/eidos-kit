@@ -18,11 +18,14 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "3.3.0"
-TRUSTED_PRIOR_RELEASES = frozenset({"3.0.0", "3.1.0", "3.2.0", "3.2.1"})
+KIT_VERSION = "3.4.0"
+TRUSTED_PRIOR_RELEASES = frozenset({"3.0.0", "3.1.0", "3.2.0", "3.2.1", "3.3.0"})
 PROJECT_RE = re.compile(r"^project:[a-z0-9]+(?:-[a-z0-9]+)*$")
 REVISION_RE = re.compile(r"^D(?P<number>\d{4})$")
-WORK_RE = re.compile(r"^W-\d{8}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORK_RE = re.compile(
+    r"^W-\d{8}-(?:\d{2}|m-[a-z0-9][a-z0-9-]*-[a-f0-9]{12})-"
+    r"[a-z0-9]+(?:-[a-z0-9]+)*$"
+)
 MANIFEST_PATH = Path(".agents/eidos/kit-manifest.json")
 USER_OWNED = {
     ".agents/context.json",
@@ -982,7 +985,7 @@ def _validate_upgrade_trust(
         ".agents/context.json",
         ".agents/eidos/direction.md",
     }
-    if installed_version in {"3.1.0", "3.2.0", "3.2.1", "3.3.0"}:
+    if installed_version != "3.0.0":
         expected_paths.add(".agents/eidos/identity.json")
     if set(files) != expected_paths:
         raise KitError("manifest_untrusted", "Installed manifest file set changed.")

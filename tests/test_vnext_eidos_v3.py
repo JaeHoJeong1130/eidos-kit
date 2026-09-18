@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
 from unittest import mock
 
@@ -1953,6 +1954,151 @@ Legacy result.
         payload = self.json_stdout(result)
         self.assertIn("path_reparse", {item["code"] for item in payload["findings"]})
         self.assertFalse(marker.exists())
+
+
+class WorkIdGenerationTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        name = f"work_ids_{id(self)}"
+        spec = importlib.util.spec_from_file_location(
+            name, KIT.parent / "template/.agents/tools/eidos.py"
+        )
+        self.tool = importlib.util.module_from_spec(spec)
+        sys.modules[name] = self.tool
+        self.addCleanup(sys.modules.pop, name, None)
+        spec.loader.exec_module(self.tool)
+        self.model = SimpleNamespace(
+            root=self.root,
+            context={"project": {"id": "project:test"}, "eidos": {}},
+            direction=SimpleNamespace(metadata={"revision": "D0001"}),
+            stages_by_revision={"D0001": [{"id": "S01"}]},
+            identity={"status": "configured", "members": []},
+            work=[],
+        )
+        patcher = mock.patch.object(
+            self.tool, "_now", return_value="2026-09-18T10:00:00+09:00"
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def prepare(self, member="h", slug="same-task", explicit=None):
+        self.model.identity["members"] = [
+            {"id": "member:" + member, "status": "active"}
+        ]
+        return self.tool._prepare_new_work(
+            SimpleNamespace(
+                id=explicit,
+                slug=slug,
+                owner="member:" + member,
+                stage="S01",
+                title="Full title is preserved " + "long " * 30,
+                workstream="workstream:default",
+                parent="none",
+                depends_on=[],
+                write_scope=[],
+                start=False,
+                risk="R1",
+            ),
+            self.model,
+        )
+
+    def test_members_and_same_member_parallel_allocations_have_distinct_ids(self):
+        # No generated file is published: every allocation sees the same empty directory.
+        with mock.patch.object(
+            self.tool.uuid,
+            "uuid4",
+            side_effect=[
+                SimpleNamespace(hex="a" * 32),
+                SimpleNamespace(hex="b" * 32),
+                SimpleNamespace(hex="a" * 32),
+            ],
+        ):
+            names = [self.prepare(member=key)[0].name for key in ("h", "h", "o")]
+        self.assertEqual(len(set(names)), 3)
+        self.assertEqual(names[0], "W-20260918-m-h-aaaaaaaaaaaa-same-task.md")
+
+    def test_long_slug_is_bounded_and_full_title_retained(self):
+        path, text = self.prepare(slug="a" * 23 + "-" + "long-" * 80 + "end")
+        self.assertTrue(path.stem.endswith("-" + "a" * 23))
+        self.assertLessEqual(len(path.name), 80)
+        self.assertIn("# Full title is preserved " + "long " * 30, text)
+        for key in ("h--", "12", "x" * 26, "x" * 49):
+            path, _ = self.prepare(member=key, slug="z" * 100)
+            self.assertIn(f"-m-{key}-", path.name)
+            self.assertLessEqual(len(path.name), 80)
+            self.assertTrue(self.tool.WORK_RE.fullmatch(path.stem))
+        with self.assertRaisesRegex(self.tool.EidosError, "no room"):
+            self.prepare(member="x" * 50)
+
+    def test_invalid_slug_is_rejected_before_truncation(self):
+        for slug in (
+            "a" * 100 + "/escape",
+            "a" * 100 + "한",
+            "a" * 100 + "-",
+            "A",
+            "a--b",
+        ):
+            with self.subTest(slug=slug), self.assertRaises(self.tool.EidosError):
+                self.prepare(slug=slug)
+        self.assertEqual(list(self.root.iterdir()), [])
+
+    def test_existing_collision_retries_and_exclusive_write_preserves_racer(self):
+        with mock.patch.object(
+            self.tool.uuid, "uuid4", return_value=SimpleNamespace(hex="a" * 32)
+        ):
+            path, _ = self.prepare()
+        path.parent.mkdir(parents=True)
+        path.write_text("original", encoding="utf-8")
+        with mock.patch.object(
+            self.tool.uuid,
+            "uuid4",
+            side_effect=[SimpleNamespace(hex="a" * 32), SimpleNamespace(hex="b" * 32)],
+        ):
+            fresh, content = self.prepare()
+        self.assertNotEqual(path, fresh)
+        fresh.write_text("racing writer", encoding="utf-8")
+        with self.assertRaises(self.tool.EidosError):
+            self.tool._exclusive_write(fresh, content)
+        self.assertEqual(fresh.read_text(), "racing writer")
+        with mock.patch.object(
+            self.tool.uuid, "uuid4", return_value=SimpleNamespace(hex="a" * 32)
+        ) as random:
+            with self.assertRaisesRegex(self.tool.EidosError, "fresh Work ID"):
+                self.prepare()
+            self.assertEqual(random.call_count, 8)
+        self.assertEqual(path.read_text(), "original")
+
+    def test_explicit_legacy_and_member_ids_and_owner_binding(self):
+        legacy = "W-20260918-01-" + "a" * 100
+        self.assertEqual(self.prepare(explicit=legacy)[0].stem, legacy)
+        valid = "W-20260918-m-h-0123456789ab-task"
+        self.assertEqual(self.prepare(explicit=valid)[0].stem, valid)
+        for invalid in (
+            valid.replace("-m-h-", "-m-o-"),
+            valid.replace("20260918", "20260917"),
+            valid.replace("0123456789ab", "0123"),
+            valid + "x" * 80,
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(self.tool.EidosError):
+                self.prepare(explicit=invalid)
+
+    def test_readers_accept_both_formats_without_owner_rebinding(self):
+        for member in ("h", "h--", "x" * 26):
+            path, text = self.prepare(member=member)
+            text = text.replace("owner_id: member:" + member, "owner_id: member:o")
+            findings = []
+            self.tool._validate_work_document(
+                path,
+                self.tool._parse_markdown_text(text, path),
+                "project:test",
+                "D0001",
+                {"D0001": {"S01"}},
+                findings,
+                self.root,
+            )
+            self.assertEqual([f.code for f in findings if f.severity == "error"], [])
 
 
 if __name__ == "__main__":

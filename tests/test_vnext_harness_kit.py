@@ -378,6 +378,27 @@ class HarnessKitTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.tool("failure", "validate", "--json").returncode, 0)
 
+    def test_without_eidos_doctor_upgrade_and_manifest_identity(self) -> None:
+        self.install(without_eidos=True)
+        for command in ("doctor", "upgrade", "doctor"):
+            result = self.manager(command)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((self.root / ".agents/eidos").exists())
+        path = self.root / ".agents/harness/kit-manifest.json"
+        original = path.read_bytes()
+        for field, invalid in (
+            ("manifest_sha256", "a" * 64),
+            ("kit_version", "3.3.0"),
+        ):
+            with self.subTest(field=field):
+                manifest = json.loads(original)
+                manifest["eidos"][field] = invalid
+                path.write_text(json.dumps(manifest), encoding="utf-8")
+                result = self.manager("doctor")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("manifest_untrusted", result.stdout + result.stderr)
+        path.write_bytes(original)
+
     def test_assess_is_read_only_and_install_refuses_collision(self) -> None:
         (self.root / "AGENTS.md").write_text("existing\n", encoding="utf-8")
         before_tree = self.tree_state()
@@ -811,6 +832,13 @@ class HarnessKitTests(unittest.TestCase):
         self.assertEqual(
             module._command_upgrade(module.argparse.Namespace(root=self.root)), 0
         )
+
+    def test_all_supported_release_descriptors_validate(self) -> None:
+        module = self.load_manager()
+        for version in sorted(module.TRUSTED_PRIOR_RELEASES | {module.KIT_VERSION}):
+            with self.subTest(version=version):
+                descriptor = module._release_descriptor(version)
+                self.assertEqual(descriptor["kit_version"], version)
 
     def test_release_descriptor_matches_exact_v1_template_bytes(self) -> None:
         module = self.load_manager()

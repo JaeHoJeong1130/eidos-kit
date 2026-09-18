@@ -82,6 +82,15 @@ claim-list probes use index-refresh-free Git plumbing and preserve every worktre
 
 ## Maintain
 
+Eidos 3.4.0 generates member-qualified random Work IDs with an 80-character filename limit.
+For example, `W-20260918-m-h-a1b2c3d4e5f6-parser-boundary.md` identifies the initial owner
+without a shared daily sequence. Only the filename slug is shortened; the full title stays in
+the document. Historical files are not renamed, and legacy IDs/references and explicit IDs
+remain supported. This is probabilistic collision resistance, not a global edit lock.
+Use Harness 1.9.1 or newer alongside Eidos 3.4.0 so Failure links accept the new IDs.
+Upgrade all readers before sharing newly generated Work files; older readers reject the new form.
+Rolling back a reader therefore needs a separately reviewed compatibility plan once new IDs exist.
+
 Eidos 3.3.0 adds `work start --input <file|->` and `work finish --input <file|->`.
 See the [installed workflow template](template/.agents/workflows/eidos-v3.md) for exact JSON inputs,
 retry behavior, and recovery limits. Existing `new-work`, `claim`, and detailed `focus --json` remain

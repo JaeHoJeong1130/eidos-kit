@@ -7,7 +7,9 @@ Failure records preserve prevention. Missing or remote activity is unknown.
 
 ## Risk
 
-- R0: read-only; no rubric is required.
+- R0: read-only; no rubric, Work, claim, or change verification is required. Start with the requested
+  evidence; load detailed contracts only when relevant or side effects are unclear. Project-owned
+  bootstrap rules remain authoritative when an older installation requires additional reads.
 - R1: bounded internal change; common rubric and self-check are required.
 - R2: public or multi-consumer impact; common plus profile rubric and independent review are required.
 - R3: release, external, destructive, or irreversible impact; fresh approval and independent review are required.
@@ -25,32 +27,13 @@ not change tracked files or the Git index.
 
 ## Repository layout
 
-Harness/Eidos own declared control-plane paths. Fresh Harness installation in an empty Git root also
-initializes project-owned support folders; upgrade never moves existing project material.
-Use `config/` for versioned configuration, profiles, scenarios, schemas and fixtures consumed by code,
-tests, packaging or deployment. Reserve `_meta/` for repository-only metadata, never runtime input.
-
-Use `_meta/layout.json` to declare project folder roles, the newcomer reading set, and reasoned
-exceptions. Respect explicit project conventions; review migration consumers before moving files.
-
-| Path | Purpose |
-| --- | --- |
-| `_docs/` | A small maintained newcomer reading set: purpose, current structure, behavior, use and limits. |
-| `_blueprint/` | Detailed build specifications, target architecture, ADRs, research and implementation plans. |
-| `_note/` | Exploratory notes, planning drafts, meeting/mail summaries and reply drafts; not execution authority. |
-| `_reference/` | External source material, specifications and curated references with provenance. |
-| `_evidence/` | Verification results and evidence supporting claims and decisions. |
-| `config/` | Versioned inputs consumed by code, tests, packaging or deployment. |
-| `_meta/` | Repository-management metadata, never product runtime input. |
-| `.cache/` | Regenerable tool caches and temporary output, excluded from Git except explicitly tracked sentinels. |
-| `.agents/eidos/` | With Eidos enabled, stable Direction and durable execution Work; focus is derived. |
-
-Keep detailed implementation plans and transient correspondence out of `_docs/`. Summarize confirmed
-conclusions in its newcomer reading set; link detailed design in `_blueprint/`. Documentation never proves
-implementation by itself. See [folder guidance](repository-layout.md) for placement examples.
-
-Place tool caches in `.cache/<tool>/`; preserve explicit tracked exceptions such as `.gitkeep`.
-Caches are not retained evidence. Never remove cache folders or tracked sentinels implicitly.
+Read [folder guidance](repository-layout.md) when creating, moving, or organizing material.
+It defines folder roles, `_meta/layout.json` mappings and explicit project exceptions. Harness/Eidos
+own declared control-plane paths; project-owned material remains under project authority.
+Fresh installation may initialize support folders; upgrade never moves existing project material.
+Use `config/` for versioned configuration consumed by code, tests or delivery tools.
+Reserve `_meta/` for repository metadata, never runtime input.
+Place caches in `.cache/<tool>/`; preserve tracked exceptions and never delete caches implicitly.
 
 Renaming roots used by code, tests, docs, artifacts or deployment is R2: inventory consumers, preserve
 historical evidence, provide recovery and independent review. Kit installation never does it implicitly.
@@ -65,12 +48,16 @@ execution. Machine names, agents, aliases and unknown members cannot own new Wor
 
 Keep stable requirement IDs, sources, applicable paths, enforcement references and change reasons
 in a project-owned registry when adopted. Select one risk route, then independently select domain
-rules by purpose and planned paths; repeat with actual changed paths before completion. Release
+rules by purpose and planned paths before changes; repeat with actual changed paths before completion. Release
 routes retain domain obligations. Read only selected references, never the full audit by default.
 Retain retired entries with reasons and replacements. With Eidos, record selected IDs, dispositions
 and verification evidence in Work; otherwise use the project's existing execution record.
 See [requirement guidance](requirements.md) for adoption and read-only `select`/`check` commands.
 An absent registry is unconfigured, not proof that no rules apply; review existing project rules.
+Pure R0 may omit requirement commands unless the project explicitly requires them; privacy,
+authority, domain rules and physical read-only behavior still apply. A query that becomes a change
+must apply the change route, requirements and execution workflow before writing. Selection semantics
+and `select --route read-only` remain available for questions that need requirement inspection.
 
 ## Failure knowledge
 

@@ -2,7 +2,7 @@
 eidos_version: 3
 document_type: work
 project_id: project:example
-work_id: W-YYYYMMDD-NN-slug
+work_id: W-YYYYMMDD-m-member-12hex-slug
 direction_revision: D0001
 stage_id: S01
 owner_id: unassigned

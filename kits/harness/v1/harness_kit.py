@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "1.8.1"
+KIT_VERSION = "1.9.1"
 TRUSTED_PRIOR_RELEASES = frozenset(
     {
         "1.0.0",
@@ -31,6 +31,8 @@ TRUSTED_PRIOR_RELEASES = frozenset(
         "1.6.0",
         "1.7.0",
         "1.8.0",
+        "1.8.1",
+        "1.9.0",
     }
 )
 MANIFEST_PATH = Path(".agents/harness/kit-manifest.json")
@@ -174,7 +176,7 @@ def _release_descriptor(version: str) -> dict[str, Any]:
 
 def _release_paths(version: str) -> frozenset[str]:
     paths = HARNESS_RELEASE_PATHS
-    if version not in {"1.8.0", "1.8.1"}:
+    if version not in {"1.8.0", "1.8.1", "1.9.0", "1.9.1"}:
         paths = paths - {".agents/tools/layout.py"}
     if version in {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0"}:
         return (
@@ -1358,8 +1360,18 @@ def _validate_manifest_trust(root: Path, manifest: dict[str, Any]) -> dict[str, 
             or set(current_eidos) != {"enabled", "kit_version", "manifest_sha256"}
             or current_eidos.get("enabled") != expected_eidos.get("enabled")
             or current_eidos.get("kit_version") != expected_eidos.get("kit_version")
-            or not isinstance(current_eidos.get("manifest_sha256"), str)
-            or re.fullmatch(r"[a-f0-9]{64}", current_eidos["manifest_sha256"]) is None
+            or (
+                current_eidos.get("enabled")
+                and (
+                    not isinstance(current_eidos.get("manifest_sha256"), str)
+                    or re.fullmatch(r"[a-f0-9]{64}", current_eidos["manifest_sha256"])
+                    is None
+                )
+            )
+            or (
+                not current_eidos.get("enabled")
+                and current_eidos.get("manifest_sha256") is not None
+            )
         ):
             raise HarnessKitError(
                 "manifest_untrusted", "Manifest Eidos identity changed."

@@ -1,5 +1,10 @@
 # Eidos v3
 
+New Work IDs include the initial member key and 12 random hex characters. Generated filenames
+are at most 80 ASCII characters; only the slug is shortened, while the full document title remains.
+Existing Work filenames and references are preserved. Current ownership is `owner_id`, even
+after reassignment. See `.agents/workflows/eidos-v3.md` for creation and compatibility rules.
+
 Direction records stable strategy. Work records durable, independently owned execution. Run
 `.agents/tools/eidos.py focus --summary` for the derived current view; do not add a manual Current Focus
 section. Agent claims are local leases stored under the Git common directory and never constitute

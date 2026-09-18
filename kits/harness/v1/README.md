@@ -1,9 +1,26 @@
 # Portable Harness Kit v1
 
+Harness 1.9.1 composes Eidos 3.4.0 and accepts both historical and member-qualified Work IDs
+in Failure references. Prior release descriptors remain unchanged. Upgrade readers together
+before creating or sharing the new Work format; generated filenames are limited to 80 characters.
+
 Harness Kit installs a small, cross-model project control plane: canonical bootstrap, routing,
 risk-based rubrics, append-only failure knowledge, verification workflow, and thin Codex/Claude
 adapters. Eidos v3 is composed by default and remains the only owner of Direction, Work, focus,
 and claims. Harness Kit does not copy or fork Eidos code.
+
+## Request-conditioned entry (1.9.0)
+
+Fresh projects start pure R0 explanations with the requested evidence. Detailed bootstrap references
+are required before changes; requirement commands are optional for R0 while all applicable rules
+remain in force. Queries that become edits restore the change prerequisites before writing.
+Folder details load when creating or organizing material, and adapters follow the project's entry
+conditions. Direction, Work, claims, risk-based review and external authority are preserved.
+
+Upgrade preserves project-owned AGENTS and routing. An older project's unconditional bootstrap
+still applies until its owner adopts the new entry conditions through [project adaptation](ADOPTION.md).
+Updating files does not prove a running agent session has reloaded them. These are workflow changes;
+model completion, latency and token effects have not been measured.
 
 ## After installation: adapt the project
 
@@ -131,7 +148,7 @@ Each project chooses its audit categories, local repository identity, rules and 
 references in its own `_meta/requirements/registry.json`. Install/upgrade never creates or overwrites
 that registry. The example is schema guidance, not an audited project baseline.
 
-Select domain rules independently of the risk route before work, then check actual changed paths
+Select domain rules independently of the risk route before changes, then check actual changed paths
 against a reviewed Git baseline. Preserve explained amendments and retirements; missing references
 and affected known gaps fail. Unrelated gaps remain visible. Record applied IDs, dispositions and
 verification evidence in Eidos Work or the project's existing execution record. Neither the tool nor

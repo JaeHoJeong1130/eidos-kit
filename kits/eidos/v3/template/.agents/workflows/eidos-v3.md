@@ -44,6 +44,19 @@ R1 may use a concise Plan. R2+ still requires detailed scope, compatibility, tes
 ```
 
 Use an active project member. Supply exactly one of `slug` or today's explicit `id`.
+Automatic IDs use `W-YYYYMMDD-m-member-12hex-slug`, for example
+`W-20260918-m-h-a1b2c3d4e5f6-parser-boundary`. The member key is the initial owner's
+canonical `member:*` suffix; the 12 random hex characters distinguish parallel sessions and
+separate clones without a shared daily counter. This makes collision unlikely, not impossible;
+existing targets are never overwritten. IDs do not coordinate concurrent edits to source files.
+Generated `.md` filenames have at most 80 ASCII characters. Only the slug is shortened, to at
+most 24 characters or the remaining filename budget; the full title is retained in the document.
+Invalid slugs are rejected before shortening. A member key leaving no slug space is rejected
+with `work_id_length`. Keep checkout roots reasonably short: the limit is on the filename,
+not the full path. Explicit member-qualified IDs must match the initial owner and the same
+80-character limit. Existing `W-YYYYMMDD-NN-slug` IDs, explicit legacy IDs and all historical
+references remain supported. Legacy explicit IDs do not gain random collision resistance.
+IDs stay immutable if an owner is later reassigned; `owner_id` is the current responsibility.
 Optional `workstream` defaults to `workstream:default`; `parent` is omitted when absent;
 `depends_on` is an optional nonempty array of existing Work IDs. The Work path is automatically
 included in its scope. The initial claim lasts one hour; existing claim renew/adopt commands remain available.
@@ -52,7 +65,7 @@ Use the returned Work and claim IDs to finish:
 
 ```json
 {
-  "work_id": "W-20260907-01-parser-boundary",
+  "work_id": "W-20260918-m-h-a1b2c3d4e5f6-parser-boundary",
   "claim_id": "claim-0123456789abcdef0123456789abcdef",
   "actor": "agent:codex",
   "status": "done",

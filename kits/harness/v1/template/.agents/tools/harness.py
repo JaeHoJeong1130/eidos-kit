@@ -19,7 +19,10 @@ from typing import Any
 FAILURE_ID = re.compile(
     r"^F-(?P<date>\d{8})-(?P<ordinal>\d{2})-[a-z0-9]+(?:-[a-z0-9]+)*$"
 )
-WORK_ID = re.compile(r"^W-\d{8}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORK_ID = re.compile(
+    r"^W-\d{8}-(?:\d{2}|m-[a-z0-9][a-z0-9-]*-[a-f0-9]{12})-"
+    r"[a-z0-9]+(?:-[a-z0-9]+)*$"
+)
 WORK_FIELDS = {
     "eidos_version",
     "document_type",

@@ -1,7 +1,7 @@
 ---
 name: project-harness
-description: Follow the repository's canonical Harness Kit contract.
+description: Apply the repository's Harness workflow when changing, resuming or redirecting project work, or inspecting the workflow itself. General explanations follow the project bootstrap directly.
 ---
 
-`AGENTS.md` is canonical. Read its context, routing, and contract references, select one route,
-and load only the referenced rubrics and failure tags. This adapter contains no independent policy.
+Follow `AGENTS.md` and load its references under the conditions it defines for the current request.
+Do not add a separate reading sequence or duplicate the canonical policies in this Skill.
