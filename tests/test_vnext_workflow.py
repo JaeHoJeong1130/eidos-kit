@@ -377,7 +377,10 @@ class WorkflowTest(unittest.TestCase):
                 "focus", "--summary", "--limit", "1", "--json", check=True
             )
         )["data"]
-        self.assertEqual(result["planned_work"][0]["work_id"], first.stem)
+        # Equal timestamps tie-break by ID; random IDs do not encode creation order.
+        self.assertEqual(
+            result["planned_work"][0]["work_id"], min(first.stem, second.stem)
+        )
         self.assertEqual(result["omitted"]["planned_work"], 1)
         second.write_text(
             re.sub(
