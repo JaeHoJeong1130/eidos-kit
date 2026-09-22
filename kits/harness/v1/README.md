@@ -1,8 +1,11 @@
 # Portable Harness Kit v1
 
-Harness 1.9.1 composes Eidos 3.4.0 and accepts both historical and member-qualified Work IDs
+Harness 1.9.2 composes Eidos 3.4.0 and accepts both historical and member-qualified Work IDs
 in Failure references. Prior release descriptors remain unchanged. Upgrade readers together
 before creating or sharing the new Work format; generated filenames are limited to 80 characters.
+
+This patch generalizes shared folder examples and fresh-install notes. Existing project-owned notes
+and custom conventions are preserved; installation and upgrade do not move documents.
 
 Harness Kit installs a small, cross-model project control plane: canonical bootstrap, routing,
 risk-based rubrics, append-only failure knowledge, verification workflow, and thin Codex/Claude
@@ -104,12 +107,12 @@ is reserved for optional repository-management metadata that is not consumed by 
 `install --layout auto` is the default; `none` retains control-only installation, and `standard`
 explicitly initializes absent support files in an existing project. `_docs/` contains a small
 maintained newcomer reading set; `_blueprint/` contains detailed architecture, ADRs and build plans;
-`_note/` contains working notes, planning drafts and meeting/mail material. `_reference/` holds
+`_note/` contains working notes, planning drafts and working discussions. `_reference/` holds
 source references, while `_evidence/` holds verification evidence. With Eidos enabled, Direction
 and Work remain the authorities for strategy and execution.
 
 Harness 1.6.0 installs [folder guidance](template/.agents/harness/repository-layout.md) at
-`.agents/harness/repository-layout.md`, with examples for software and research projects.
+`.agents/harness/repository-layout.md`, with examples based on document purpose.
 Existing explicit conventions take precedence. Upgrading adds the guide and read-only layout inspector
 without moving material, and preserves project-owned bootstrap and routing files.
 

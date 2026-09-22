@@ -17,7 +17,7 @@
 
 ## 프로젝트 폴더는 어떻게 나누나요?
 
-Harness 1.8.1의 공통 계약과 [폴더 배치 가이드](kits/harness/v1/template/.agents/harness/repository-layout.md)에 기준과 예시가 들어 있습니다.
+Harness 1.9.2의 공통 계약과 [폴더 배치 가이드](kits/harness/v1/template/.agents/harness/repository-layout.md)에 범용 기준과 예시가 들어 있습니다.
 설치된 프로젝트에서는 `.agents/harness/repository-layout.md`를 읽으면 됩니다.
 
 | 폴더 | 용도 |
@@ -77,7 +77,7 @@ py -3.13 -B .agents/tools/requirements.py check --base HEAD --json
 
 규칙 목록이 없으면 미설정 상태를 알립니다. 먼저 기존 지침을 검토하고 도입 여부를 기록합니다.
 목록을 도입한 프로젝트는 `check`를 기존 공식 검증 명령의 빠른 사전 검사로 연결하면 됩니다.
-이 배포는 Harness 1.9.1과 Eidos 3.4.0을 함께 제공합니다.
+이 배포는 Harness 1.9.2와 Eidos 3.4.0을 함께 제공합니다.
 
 새 Work 파일은 `W-20260918-m-h-a1b2c3d4e5f6-iv3-manual.md`처럼 최초 멤버 ID와
 12자리 무작위 값을 포함합니다. 같은 사람이 여러 창이나 PC에서 작업해도 공용 순번을
@@ -307,7 +307,7 @@ py -3.13 -B kits/harness/v1/harness_kit.py doctor --root C:\project\existing-pro
 
 ## 검증과 배포 범위
 
-현재 버전은 **Harness 1.9.1 / Eidos 3.4.0**입니다. 비공개 협업 시험 배포이며 공개 오픈소스 라이선스는 아직 선택하지 않았습니다.
+현재 버전은 **Harness 1.9.2 / Eidos 3.4.0**입니다. 비공개 협업 시험 배포이며 공개 오픈소스 라이선스는 아직 선택하지 않았습니다.
 제품 코드와 도메인 규칙은 각 프로젝트가 소유합니다. 실제 모델 성능이나 토큰 절감 효과는 아직 평가하지 않았습니다.
 
 ```powershell

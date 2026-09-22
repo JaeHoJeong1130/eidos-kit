@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 
-KIT_VERSION = "1.9.1"
+KIT_VERSION = "1.9.2"
 TRUSTED_PRIOR_RELEASES = frozenset(
     {
         "1.0.0",
@@ -33,6 +33,7 @@ TRUSTED_PRIOR_RELEASES = frozenset(
         "1.8.0",
         "1.8.1",
         "1.9.0",
+        "1.9.1",
     }
 )
 MANIFEST_PATH = Path(".agents/harness/kit-manifest.json")
@@ -73,7 +74,7 @@ Blueprints describe intended work and do not prove current implementation.
 """,
     "_note/README.md": """# Working notes
 
-Keep exploratory notes, planning drafts, meeting or mail summaries, and reply drafts here. Notes are
+Keep exploratory notes, planning drafts, and working discussion notes here. Notes are
 not execution authority; promote confirmed conclusions to `_docs/`, `_blueprint/`, or Eidos Work.
 """,
     "_reference/README.md": """# References
@@ -176,7 +177,7 @@ def _release_descriptor(version: str) -> dict[str, Any]:
 
 def _release_paths(version: str) -> frozenset[str]:
     paths = HARNESS_RELEASE_PATHS
-    if version not in {"1.8.0", "1.8.1", "1.9.0", "1.9.1"}:
+    if version not in {"1.8.0", "1.8.1", "1.9.0", "1.9.1", "1.9.2"}:
         paths = paths - {".agents/tools/layout.py"}
     if version in {"1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.4.1", "1.5.0"}:
         return (

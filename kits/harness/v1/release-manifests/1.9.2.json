@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kit_version": "1.9.2",
+  "files": {
+    ".agents/failures/_template.md": "f618063341e2903a5ddfd6cedacb7c05502040e2c3dc9ffc01ce7c8413fe1596",
+    ".agents/harness/contract.md": "dd49097bd1b81d14f2243a89e3e95755e00bc50d573cd2f75069b08abf927ec0",
+    ".agents/harness/repository-layout.md": "23acb7cc25590e19575825ceafe37160ad050a238c36bd74a2e300532c27d0fe",
+    ".agents/harness/requirements.example.json": "246a97410b9b7222c145f75437efd2d58407dd33f47255fe43961970c00d4020",
+    ".agents/harness/requirements.md": "cc7f966ce316284211f49dac7a8dba656569b24626967901e25b70374c846c71",
+    ".agents/routes/_template.md": "42316b05764b1bfa2dac81721ac087de5dfb7024cda8882c64080f6cceebe923",
+    ".agents/rubrics/artifact-or-model.md": "171ad74ae20322b15729f566d4e56c6f3585dcc4c2853615daa2704910e3130a",
+    ".agents/rubrics/common-change.md": "7c1bb4ee4b2a4d3bf9236abbb73d49c6df7bff48acb913efe417f6468bd12134",
+    ".agents/rubrics/public-contract.md": "99ff04fa21fad96eb6ddb868cf4a27ce7564358b77b2cda9f110cb8e8a802e3c",
+    ".agents/rubrics/release-or-external.md": "4aa170281a59df542827dbebab6f83ad3f0addbb6d623ef020b6fdaf1b1e3c91",
+    ".agents/skills/project-harness/SKILL.md": "673aaca785b9e952f8c8f921936208117130c176553f044c25188acaab9e2294",
+    ".agents/tools/harness.py": "26ca9d76a018cf2b9a41794e6e296c689278a7f940adc7f80a0205f7ad24b2ae",
+    ".agents/tools/layout.py": "9cb63fb3e9517a2c9508df7dfd51cb3655677eb5bb85dc58bb389b977653761f",
+    ".agents/tools/requirements.py": "6c516f95b932a5d6ce02f6142504dbf7e516dbb9ca35ec0ded7ab2d5d8acaf44",
+    ".agents/workflows/change.md": "1616572210209c338993cf496d695de923ed0132a62cd39b6a12c1a6cc91eb85",
+    ".agents/workflows/verification.md": "3329a28847c7107eb95eb2926fe5785a5ac16a0d036cac9368abe65d6f7828e3",
+    ".claude/skills/project-harness/SKILL.md": "673aaca785b9e952f8c8f921936208117130c176553f044c25188acaab9e2294",
+    "CLAUDE.md": "b453fac5df222c10de2abc535089d41c7b543d8f82090b809e943db3a53ca069"
+  },
+  "eidos": {
+    "kit_version": "3.4.0",
+    "files": {
+      ".agents/eidos/README.md": "42e57492be98eccf12f89759390d581a1e28890a8cb47ee8814f64bcbe2c8df7",
+      ".agents/eidos/archive/README.md": "33c8946b6189f14395d3aa700bdf5b7b8dd1d71092cc37e6dd29216055cbcdb2",
+      ".agents/eidos/work/_template.md": "ff49b9c578d0fa2be6cf60f7d11b15f1dec4988dd19d32f31e10e1a1164f4d04",
+      ".agents/tools/eidos.py": "b226b58e6262759bd25fc173e6cda33b05b93025b24d0ad95ad8abfb54527277",
+      ".agents/workflows/eidos-v3.md": "30b25be7240ceeab6393361a128b651bfbdeb07a9f6c6ee645ec9be77f74e8f5"
+    }
+  }
+}

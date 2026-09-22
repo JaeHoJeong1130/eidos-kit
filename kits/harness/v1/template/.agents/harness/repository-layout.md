@@ -11,7 +11,7 @@ control files only unless `--layout standard` is requested; upgrade never reloca
 | --- | --- | --- |
 | `_docs/` | A small maintained reading set from which a newcomer can understand the project. | Index plus typically 4–6 concise pages: overview, current structure, usage, operations, status and limits. |
 | `_blueprint/` | Concrete documents used to design and build the project. | Detailed target architecture, contracts, ADRs, implementation roadmaps, research designs and acceptance plans. |
-| `_note/` | Material still being explored or a record of working communication. | Planning drafts, alternatives, meeting summaries, mail summaries and reply drafts. |
+| `_note/` | Material still being explored or a record of working discussion. | Planning drafts, alternatives and working discussion notes. |
 | `_reference/` | Inputs consulted for understanding or design, with source and version identified. | External specifications, manuals, papers and sanitized source summaries. |
 | `_evidence/` | Results supporting a specific claim, tied to the relevant revision and check. | Validation summaries, experiment evidence and acceptance results. |
 | `config/` | Versioned configuration consumed by software or its tests and delivery tools. | Runtime profiles, schemas, test scenarios and fixtures. |
@@ -21,13 +21,13 @@ control files only unless `--layout standard` is requested; upgrade never reloca
 
 Folder names alone do not establish truth, permission or implementation status. Separate confirmed
 facts, proposals, observed results and unknowns. Follow the project's privacy and evidence rules;
-these examples do not authorize copying raw email, personal data, credentials or restricted material.
+these examples do not authorize copying personal data, credentials or restricted source material.
 
 ## Placement examples
 
-- A mail requesting a scope change: put its necessary work summary and reply draft in `_note/mail/`.
-  After agreement, update the relevant explanation in `_docs/`; update Direction or create Work when
-  execution intent changes. A reply draft is not a sent message or an agreement.
+- A proposed scope change: keep working notes in `_note/`. After agreement, update the relevant
+  explanation in `_docs/`; update Direction or create Work when execution intent changes.
+  A draft is not an accepted decision.
 - An early implementation idea: use `_note/planning/` while exploring options. A concrete build plan
   belongs in `_blueprint/`; assignment, progress and execution authority remain in Eidos Work.
 - A description of how the current system works: use `_docs/architecture.md`, backed by actual source
@@ -41,9 +41,9 @@ these examples do not authorize copying raw email, personal data, credentials or
   prevents descendant exceptions: use traversable parent patterns and verify exclusions and
   exceptions with Git. Promote evidence worth retaining to `_evidence/` with its revision and check.
   Never treat the cache designation as permission to delete another task's files.
-- A research project may explicitly reserve `_development_plan/` for R&D proposal documents and
-  presentation materials. Preserve that project convention; place everyday planning and mail drafts
-  in `_note/`. The kit does not create `_development_plan/` or assume it is a universal requirement.
+- A project may reserve additional folders for its domain-specific material. Preserve explicitly
+  documented purposes and use the project's role mappings and exceptions instead of imposing another
+  project's folder names. The kit does not create these custom folders.
 
 ## Keep the explanation coherent
 
@@ -78,4 +78,4 @@ project documents. Installation and layout operations never stage, commit, push 
 
 When a project's existing layout differs, record the mapping in its bootstrap or project route.
 The guide provides defaults; it does not introduce a parallel planner, replace domain contracts, or
-make research plans, communication drafts and external reference documents into implementation facts.
+make plans, working notes and external reference documents into implementation facts.
